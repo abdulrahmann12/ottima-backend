@@ -34,4 +34,7 @@ public class ValidationMessages {
     public static final String NEW_PASSWORD_MIN_SIZE = "New password must be at least 8 characters long";
     public static final String ROLE_REQUIRED = "Role is required";
 
+    //========================= Standard Item =========================
+    public static final String ITEM_NAME_AR_REQUIRED = "Arabic name is required";
+    public static final String ITEM_NAME_EN_REQUIRED = "English name is required";
 }

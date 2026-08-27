@@ -130,4 +130,13 @@ public class SwaggerMessages {
 
     public static final String GET_ALL_CLIENTS = "Get All Clients";
     public static final String GET_ALL_CLIENTS_DESC = "Returns a paginated list of all client users";
+
+    //========================= Standard Item Tag =========================
+    public static final String TAG_STANDARD_ITEM = "Standard Items";
+    public static final String TAG_STANDARD_ITEM_DESC = "Standard Items Management Module";
+    public static final String CREATE_STANDARD_ITEM = "Create Standard Item";
+    public static final String UPDATE_STANDARD_ITEM = "Update Standard Item";
+    public static final String DELETE_STANDARD_ITEM = "Delete Standard Item";
+    public static final String GET_STANDARD_ITEM = "Get Standard Item by ID";
+    public static final String GET_ALL_STANDARD_ITEMS = "Get All Standard Items";
 }

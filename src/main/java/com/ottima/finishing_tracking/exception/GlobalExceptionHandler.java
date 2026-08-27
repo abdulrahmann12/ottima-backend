@@ -87,6 +87,7 @@ public class GlobalExceptionHandler {
             RoleNotFoundException.class,
             UserNotFoundException.class,
             UserNotActiveException.class,
+            StandardItemNotFoundException.class,
 
     })
     public ResponseEntity<BaseResponse> handleNotFoundBusinessExceptions(Exception ex, WebRequest request) {
@@ -100,6 +101,7 @@ public class GlobalExceptionHandler {
             UserAlreadyDeactivatedException.class,
             UserAlreadyActivatedException.class,
             VerificationCodeAlreadySentException.class,
+            StandardItemAlreadyExistsException.class,
 
     })
     public ResponseEntity<BaseResponse> handleConflictExceptions(Exception ex, WebRequest request) {

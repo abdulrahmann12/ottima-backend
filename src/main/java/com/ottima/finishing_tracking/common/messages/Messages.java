@@ -88,4 +88,13 @@ public class Messages {
     //========================= Client ============================
     public static final String CLIENT_CREATED = "Client created successfully";
     public static final String CLIENTS_FETCHED = "Clients fetched successfully";
+
+    //========================= Standard Item ============================
+    public static final String STANDARD_ITEM_CREATED = "Standard item created successfully";
+    public static final String STANDARD_ITEM_UPDATED = "Standard item updated successfully";
+    public static final String STANDARD_ITEM_DELETED = "Standard item deleted successfully";
+    public static final String STANDARD_ITEM_FETCHED = "Standard item fetched successfully";
+    public static final String STANDARD_ITEMS_FETCHED = "Standard items fetched successfully";
+    public static final String STANDARD_ITEM_NOT_FOUND = "Standard item not found";
+    public static final String STANDARD_ITEM_ALREADY_EXISTS = "Standard item with the same name already exists";
 }
