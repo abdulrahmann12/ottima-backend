@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitConfig rateLimitConfig;
+    private final ObjectMapper objectMapper;
     private final ConcurrentMap<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     @Override
@@ -75,6 +76,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
         BaseResponse error = new BaseResponse(Messages.TOO_MANY_REQUESTS, request.getRequestURI());
         response.setStatus(429); // Too Many Requests
         response.setContentType("application/json");
-        new ObjectMapper().writeValue(response.getWriter(), error);
+        objectMapper.writeValue(response.getWriter(), error);
     }
 }

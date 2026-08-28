@@ -28,12 +28,13 @@ public class RoleService {
     @Transactional
     @CacheEvict(value = "roles", allEntries = true)
     public RoleResponse createRole(@Valid CreateRoleRequest request){
-        if(roleRepository.findByRoleName(request.getRoleName()).isPresent()){
+        String normalizedRoleName = request.getRoleName().trim().toUpperCase();
+
+        if(roleRepository.findByRoleName(normalizedRoleName).isPresent()){
             throw new RoleAlreadyExistsException();
         }
-
         Role role = roleMapper.toEntity(request);
-        role.setRoleName(request.getRoleName().trim().toUpperCase());
+        role.setRoleName(normalizedRoleName);
         Role savedRole = roleRepository.save(role);
         return roleMapper.toResponse(savedRole);
     }

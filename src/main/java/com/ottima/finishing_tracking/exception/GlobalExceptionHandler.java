@@ -88,6 +88,8 @@ public class GlobalExceptionHandler {
             UserNotFoundException.class,
             UserNotActiveException.class,
             StandardItemNotFoundException.class,
+            ProjectNotFoundException.class,
+            ProjectItemNotFoundException.class,
 
     })
     public ResponseEntity<BaseResponse> handleNotFoundBusinessExceptions(Exception ex, WebRequest request) {
@@ -102,6 +104,8 @@ public class GlobalExceptionHandler {
             UserAlreadyActivatedException.class,
             VerificationCodeAlreadySentException.class,
             StandardItemAlreadyExistsException.class,
+            StandardItemInUseException.class,
+            ProjectItemAlreadyExistsException.class,
 
     })
     public ResponseEntity<BaseResponse> handleConflictExceptions(Exception ex, WebRequest request) {
@@ -137,6 +141,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity< BaseResponse> handleUnauthorizedException(UnauthorizedException ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ProjectAccessDeniedException.class)
+    public ResponseEntity<BaseResponse> handleProjectAccessDenied(ProjectAccessDeniedException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<BaseResponse> handleInvalidRole(InvalidRoleException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(WeightLimitExceededException.class)
+    public ResponseEntity<BaseResponse> handleWeightLimitExceeded(WeightLimitExceededException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.UNPROCESSABLE_ENTITY);
     }
     // === Validation Exceptions === //
 

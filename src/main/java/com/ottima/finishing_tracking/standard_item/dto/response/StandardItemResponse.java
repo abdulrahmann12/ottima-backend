@@ -17,6 +17,7 @@ public class StandardItemResponse {
     private String nameAr;
     private String nameEn;
     private String description;
+    private Integer defaultSequence;
     private Instant createdAt;
     private Instant updatedAt;
 }

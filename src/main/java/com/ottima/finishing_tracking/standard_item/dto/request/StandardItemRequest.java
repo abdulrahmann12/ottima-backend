@@ -18,4 +18,6 @@ public class StandardItemRequest {
     private String nameEn;
 
     private String description;
+
+    private Integer defaultSequence;
 }

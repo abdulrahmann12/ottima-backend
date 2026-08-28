@@ -18,7 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLRestriction("deletes_at IS NULL")
 public class StandardItem {
 
     @Id
@@ -34,13 +33,13 @@ public class StandardItem {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "default_sequence")
+    private Integer defaultSequence;
+
     @CreationTimestamp
     @Column(updatable = false)
     private Instant createdAt;
 
     @UpdateTimestamp
     private Instant updatedAt;
-
-    @Column(name = "deletes_at")
-    private Instant deletesAt;
 }

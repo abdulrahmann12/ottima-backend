@@ -24,7 +24,7 @@ public class ClientController {
     @Operation(summary = SwaggerMessages.CREATE_CLIENT_USER, description = SwaggerMessages.CREATE_CLIENT_USER_DESC)
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<BaseResponse> createClient(@Valid @RequestBody CreateUserRequest request) {
+        public ResponseEntity<BaseResponse> createClient(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.ok(
                 new BaseResponse(Messages.CLIENT_CREATED, clientService.createClient(request))
         );

@@ -1,6 +1,5 @@
 package com.ottima.finishing_tracking.security;
 
-import com.ottima.finishing_tracking.jwt.service.JwtService;
 import com.ottima.finishing_tracking.rate_limit.RateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -27,8 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RateLimitFilter rateLimitFilter;
 
     @Value("#{'${cors.allowed-origins}'.split(',')}")
@@ -37,33 +34,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .headers(headers -> headers
-                .frameOptions(frame -> frame.deny())
-                .xssProtection(xss -> {})
-                .contentTypeOptions(opts -> {})
-            )
-            .authorizeHttpRequests(auth -> auth
-                // Swagger
-                    .requestMatchers(SecurityConstants.PUBLIC_PATHS).permitAll()
-                // Public URL redirect & check
-                    .requestMatchers("/actuator/**").hasRole("ADMIN")
-                // Everything else requires auth
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(rateLimitFilter,
-                        JwtAuthenticationFilter.class);
-
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .xssProtection(xss -> {})
+                        .contentTypeOptions(opts -> {})
+                )
+                .authorizeHttpRequests(auth -> auth
+                        // Swagger
+                        .requestMatchers(SecurityConstants.PUBLIC_PATHS).permitAll()
+                        // Public URL redirect & check
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
+                        // Everything else requires auth
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtService, userDetailsService);
     }
 
     @Bean

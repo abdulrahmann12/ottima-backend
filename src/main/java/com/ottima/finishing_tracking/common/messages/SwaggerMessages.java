@@ -139,4 +139,50 @@ public class SwaggerMessages {
     public static final String DELETE_STANDARD_ITEM = "Delete Standard Item";
     public static final String GET_STANDARD_ITEM = "Get Standard Item by ID";
     public static final String GET_ALL_STANDARD_ITEMS = "Get All Standard Items";
+
+    //========================= Project Tag ===============================
+    public static final String TAG_PROJECT_ADMIN = "Admin - Project Management";
+    public static final String TAG_PROJECT_ADMIN_DESC = "Admin endpoints for creating, updating, deleting projects and managing project items";
+    public static final String TAG_PROJECT_ENGINEER = "Engineer - Project Tracking";
+    public static final String TAG_PROJECT_ENGINEER_DESC = "Engineer endpoints for viewing assigned projects and updating item progress";
+    public static final String TAG_PROJECT_CLIENT = "Client - Project Dashboard";
+    public static final String TAG_PROJECT_CLIENT_DESC = "Client endpoints for viewing owned projects and their financial/progress details";
+
+    // Admin - Project
+    public static final String CREATE_PROJECT = "Create Project";
+    public static final String CREATE_PROJECT_DESC = "Creates a new project and assigns roles to engineers and clients";
+    public static final String UPDATE_PROJECT = "Update Project";
+    public static final String UPDATE_PROJECT_DESC = "Updates the main details of an existing project by its ID";
+    public static final String DELETE_PROJECT = "Delete Project";
+    public static final String DELETE_PROJECT_DESC = "Soft-deletes a project by its ID";
+    public static final String CHANGE_PROJECT_STATUS = "Change Project Status";
+    public static final String CHANGE_PROJECT_STATUS_DESC = "Updates the overall status of a project (e.g. IN_PROGRESS, COMPLETED)";
+    public static final String GET_ALL_PROJECTS_ADMIN = "Get All Projects (Admin)";
+    public static final String GET_ALL_PROJECTS_ADMIN_DESC = "Returns a paginated summary of all projects for admin overview";
+    public static final String GET_PROJECT_DETAILS_ADMIN = "Get Project Details (Admin)";
+    public static final String GET_PROJECT_DETAILS_ADMIN_DESC = "Returns full project details including items and assignments";
+
+    // Admin - Project Items
+    public static final String ASSIGN_PROJECT_ITEMS = "Assign Project Items";
+    public static final String ASSIGN_PROJECT_ITEMS_DESC = "Bulk-assigns multiple standard items to a project";
+    public static final String UPDATE_PROJECT_ITEM_CONFIG = "Update Project Item Config";
+    public static final String UPDATE_PROJECT_ITEM_CONFIG_DESC = "Updates the budget, weight, or sequence of a specific project item";
+    public static final String REMOVE_PROJECT_ITEM = "Remove Project Item";
+    public static final String REMOVE_PROJECT_ITEM_DESC = "Removes an item from a project by item ID";
+
+    // Engineer - Project
+    public static final String GET_ALL_PROJECTS_ENGINEER = "Get All Projects (Engineer)";
+    public static final String GET_ALL_PROJECTS_ENGINEER_DESC = "Returns a paginated project summary for the engineer's overview";
+    public static final String GET_ASSIGNED_PROJECTS_ENGINEER = "Get My Assigned Projects";
+    public static final String GET_ASSIGNED_PROJECTS_ENGINEER_DESC = "Returns a paginated list of projects specifically assigned to the logged-in engineer";
+    public static final String GET_PROJECT_DETAILS_ENGINEER = "Get Project Details (Engineer)";
+    public static final String GET_PROJECT_DETAILS_ENGINEER_DESC = "Returns engineering-focused project details without financials";
+    public static final String UPDATE_ITEM_PROGRESS = "Update Item Progress";
+    public static final String UPDATE_ITEM_PROGRESS_DESC = "Updates the on-site progress percentage and status for a specific project item";
+
+    // Client - Project
+    public static final String GET_MY_PROJECTS = "Get My Projects";
+    public static final String GET_MY_PROJECTS_DESC = "Returns a paginated summary of all projects owned by the logged-in client";
+    public static final String GET_PROJECT_DETAILS_CLIENT = "Get Project Details (Client)";
+    public static final String GET_PROJECT_DETAILS_CLIENT_DESC = "Returns full project details including financials and progress for the client";
 }

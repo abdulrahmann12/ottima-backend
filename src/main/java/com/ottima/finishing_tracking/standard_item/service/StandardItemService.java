@@ -1,31 +1,37 @@
 package com.ottima.finishing_tracking.standard_item.service;
 
 import com.ottima.finishing_tracking.exception.StandardItemAlreadyExistsException;
+import com.ottima.finishing_tracking.exception.StandardItemInUseException;
 import com.ottima.finishing_tracking.exception.StandardItemNotFoundException;
+import com.ottima.finishing_tracking.project.repository.ProjectItemRepository;
 import com.ottima.finishing_tracking.standard_item.dto.request.StandardItemRequest;
 import com.ottima.finishing_tracking.standard_item.dto.response.StandardItemResponse;
 import com.ottima.finishing_tracking.standard_item.entity.StandardItem;
 import com.ottima.finishing_tracking.standard_item.mapper.StandardItemMapper;
 import com.ottima.finishing_tracking.standard_item.repository.StandardItemRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class StandardItemService {
 
     private final StandardItemRepository standardItemRepository;
     private final StandardItemMapper standardItemMapper;
+    private final ProjectItemRepository projectItemRepository;
 
     @Transactional
-    public StandardItemResponse create(StandardItemRequest request) {
+    public StandardItemResponse create(@Valid StandardItemRequest request) {
         if (standardItemRepository.existsByNameArOrNameEn(request.getNameAr(), request.getNameEn())) {
             throw new StandardItemAlreadyExistsException();
         }
@@ -36,7 +42,7 @@ public class StandardItemService {
     }
 
     @Transactional
-    public StandardItemResponse update(UUID itemId, StandardItemRequest request) {
+    public StandardItemResponse update(UUID itemId, @Valid StandardItemRequest request) {
         StandardItem item = getEntityById(itemId);
 
         if (standardItemRepository.existsByNameAndIdNot(request.getNameAr(), request.getNameEn(), itemId)) {
@@ -61,8 +67,11 @@ public class StandardItemService {
     @Transactional
     public void delete(UUID itemId) {
         StandardItem item = getEntityById(itemId);
-        item.setDeletesAt(Instant.now());
-        standardItemRepository.save(item);
+
+        if (projectItemRepository.existsByStandardItem_ItemId(itemId)) {
+            throw new StandardItemInUseException();
+        }
+        standardItemRepository.delete(item);
     }
 
     private StandardItem getEntityById(UUID itemId) {

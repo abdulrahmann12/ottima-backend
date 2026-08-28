@@ -12,12 +12,16 @@ public class Messages {
     public static final String USERS_FETCHED = "Users retrieved successfully";
     public static final String PROFILE_PICTURE_UPDATED = "Profile picture updated successfully";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final String CLIENT_NOT_FOUND = "Client not found";
+    public static final String ENGINEER_NOT_FOUND = "Engineer not found";
     public static final String USER_NOT_ACTIVE = "This user account is deactivated";
     public static final String USER_ALREADY_DEACTIVATED = "This user account is already deactivated";
     public static final String USER_ALREADY_ACTIVATED = "This user account is already activated";
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String EMAIL_ALREADY_OR_USERNAME_EXISTS = "Email or Username already exists";
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
+    public static final String USER_NOT_CLIENT = "The selected user does not have a CLIENT role";
+    public static final String USER_NOT_ENGINEER = "The selected user does not have an ENGINEER role";
 
     //========================= Role =========================
 
@@ -97,4 +101,25 @@ public class Messages {
     public static final String STANDARD_ITEMS_FETCHED = "Standard items fetched successfully";
     public static final String STANDARD_ITEM_NOT_FOUND = "Standard item not found";
     public static final String STANDARD_ITEM_ALREADY_EXISTS = "Standard item with the same name already exists";
+    public static final String STANDARD_ITEM_IN_USE = "Cannot delete standard item because it is currently used in one or more projects";
+
+    //========================= Project ============================
+    public static final String PROJECT_CREATED = "Project created successfully";
+    public static final String PROJECT_UPDATED = "Project updated successfully";
+    public static final String PROJECT_DELETED = "Project deleted successfully";
+    public static final String PROJECT_STATUS_CHANGED = "Project status updated successfully";
+    public static final String PROJECT_FETCHED = "Project fetched successfully";
+    public static final String PROJECTS_FETCHED = "Projects fetched successfully";
+    public static final String PROJECT_NOT_FOUND = "Project not found";
+    public static final String PROJECT_ACCESS_DENIED = "You do not have permission to view this project.";
+    public static final String INVALID_ROLE = "Invalid role assignment";
+
+    //========================= Project Item ============================
+    public static final String PROJECT_ITEM_ADDED = "Item added to project successfully";
+    public static final String PROJECT_ITEM_UPDATED = "Project item updated successfully";
+    public static final String PROJECT_ITEM_REMOVED = "Project item removed successfully";
+    public static final String PROJECT_ITEM_PROGRESS_UPDATED = "Item progress updated successfully";
+    public static final String PROJECT_ITEM_NOT_FOUND = "Project item not found";
+    public static final String PROJECT_ITEM_ALREADY_EXISTS = "This item has already been added to the project";
+    public static final String WEIGHT_LIMIT_EXCEEDED = "Total project items weight cannot exceed 100%";
 }

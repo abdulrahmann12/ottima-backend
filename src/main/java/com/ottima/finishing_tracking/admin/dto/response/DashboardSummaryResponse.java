@@ -16,6 +16,7 @@ public class DashboardSummaryResponse {
 
     private long totalClients;
     private long totalEngineers;
+    private long totalAdmins;
     private long activeProjects;
     private long completedProjects;
 }

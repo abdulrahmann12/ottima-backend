@@ -78,4 +78,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 """)
     Optional<User> findForUpdateByIdentifier(@Param("value") String value);
 
-}
+    long countByRole_RoleName(String roleName);}

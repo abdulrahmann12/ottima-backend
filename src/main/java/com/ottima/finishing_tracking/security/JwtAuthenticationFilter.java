@@ -28,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper;
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
@@ -84,7 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         BaseResponse error = new BaseResponse(message, request.getRequestURI());
         response.setStatus(status);
         response.setContentType("application/json");
-        new ObjectMapper().writeValue(response.getWriter(), error);
+        objectMapper.writeValue(response.getWriter(), error);
     }
 
     @Override

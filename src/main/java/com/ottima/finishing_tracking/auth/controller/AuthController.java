@@ -26,7 +26,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-
     @Operation(summary = SwaggerMessages.LOGIN, description = SwaggerMessages.LOGIN_DESC)
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> login(@Valid @RequestBody LoginRequestDTO request) {

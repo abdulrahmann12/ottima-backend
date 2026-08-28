@@ -37,4 +37,22 @@ public class ValidationMessages {
     //========================= Standard Item =========================
     public static final String ITEM_NAME_AR_REQUIRED = "Arabic name is required";
     public static final String ITEM_NAME_EN_REQUIRED = "English name is required";
+
+    //========================= Project =========================
+    public static final String PROJECT_NAME_AR_REQUIRED = "Project Arabic name is required";
+    public static final String PROJECT_NAME_EN_REQUIRED = "Project English name is required";
+    public static final String CLIENT_ID_REQUIRED = "Client ID is required";
+    public static final String ENGINEER_ID_REQUIRED = "Engineer ID is required";
+    public static final String BUDGET_REQUIRED = "Budget must be specified";
+    public static final String BUDGET_MIN = "Budget cannot be negative";
+    public static final String DATE_REQUIRED = "Date is required";
+    public static final String DATE_MUST_BE_IN_FUTURE = "Date must be in the future";
+
+    //========================= Project Item =========================
+    public static final String STANDARD_ITEM_ID_REQUIRED = "Standard item ID is required";
+    public static final String WEIGHT_REQUIRED = "Weight percentage is required";
+    public static final String WEIGHT_MIN = "Weight percentage cannot be less than 0";
+    public static final String WEIGHT_MAX = "Weight percentage cannot exceed 100";
+    public static final String PROGRESS_REQUIRED = "Completion percentage is required";
+    public static final String PROGRESS_MIN = "Completion percentage cannot be less than 0";
 }

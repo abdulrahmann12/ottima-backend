@@ -156,7 +156,7 @@ public class UserService {
     }
 
     public Page<UserSummaryResponse> getUsersByRole(String roleName, int page, int size) {
-        Role role = roleRepository.findByRoleName(roleName).orElseThrow(RoleNotFoundException::new);
+        Role role = roleRepository.findByRoleName(roleName.trim().toUpperCase()).orElseThrow(RoleNotFoundException::new);
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findByRole(role, pageable).map(userMapper::toSummaryResponse);
     }

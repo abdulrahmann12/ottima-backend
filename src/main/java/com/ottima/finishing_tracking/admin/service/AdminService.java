@@ -38,9 +38,10 @@ public class AdminService {
 
         long totalActiveUsers = userRepository.countByActiveTrue();
         long totalDeactivatedUsers = userRepository.countByActiveFalse();
+        long totalClients = userRepository.countByRole_RoleName("CLIENT");
+        long totalEngineers = userRepository.countByRole_RoleName("ENGINEER");
+        long totalAdmins = userRepository.countByRole_RoleName("ADMIN");
 
-        long totalClients = 0;
-        long totalEngineers = 0;
         long activeProjects = 0;
         long completedProjects = 0;
 
@@ -49,6 +50,7 @@ public class AdminService {
                 .totalDeactivatedUsers(totalDeactivatedUsers)
                 .totalClients(totalClients)
                 .totalEngineers(totalEngineers)
+                .totalAdmins(totalAdmins)
                 .activeProjects(activeProjects)
                 .completedProjects(completedProjects)
                 .build();

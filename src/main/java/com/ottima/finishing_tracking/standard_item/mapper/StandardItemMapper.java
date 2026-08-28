@@ -13,7 +13,6 @@ public interface StandardItemMapper {
     @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deletesAt", ignore = true)
     StandardItem toEntity(StandardItemRequest request);
 
     StandardItemResponse toResponse(StandardItem entity);
@@ -21,6 +20,5 @@ public interface StandardItemMapper {
     @Mapping(target = "itemId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "deletesAt", ignore = true)
     void updateEntityFromRequest(StandardItemRequest request, @MappingTarget StandardItem entity);
 }
