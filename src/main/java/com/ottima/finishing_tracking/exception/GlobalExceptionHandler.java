@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
             StandardItemNotFoundException.class,
             ProjectNotFoundException.class,
             ProjectItemNotFoundException.class,
-
+            DailyUpdateNotFoundException.class,
     })
     public ResponseEntity<BaseResponse> handleNotFoundBusinessExceptions(Exception ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND);

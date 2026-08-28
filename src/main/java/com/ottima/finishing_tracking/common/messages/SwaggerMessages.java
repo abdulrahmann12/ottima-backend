@@ -185,4 +185,29 @@ public class SwaggerMessages {
     public static final String GET_MY_PROJECTS_DESC = "Returns a paginated summary of all projects owned by the logged-in client";
     public static final String GET_PROJECT_DETAILS_CLIENT = "Get Project Details (Client)";
     public static final String GET_PROJECT_DETAILS_CLIENT_DESC = "Returns full project details including financials and progress for the client";
+
+    //========================= Daily Update Tag ===============================
+    public static final String TAG_DAILY_UPDATE_ADMIN = "Admin - Daily Updates";
+    public static final String TAG_DAILY_UPDATE_ADMIN_DESC = "Endpoints for admins to monitor and evaluate daily updates";
+    public static final String TAG_DAILY_UPDATE_ENGINEER = "Engineer - Daily Updates";
+    public static final String TAG_DAILY_UPDATE_ENGINEER_DESC = "Endpoints for engineers to manage daily updates";
+    public static final String TAG_DAILY_UPDATE_CLIENT = "Client - Daily Updates";
+    public static final String TAG_DAILY_UPDATE_CLIENT_DESC = "Endpoints for clients to view approved item updates";
+
+    // Admin - Daily Updates
+    public static final String GET_ALL_DAILY_UPDATES_ADMIN = "Get All Project Updates (Admin)";
+    public static final String GET_ALL_DAILY_UPDATES_ADMIN_DESC = "Admin views all updates with dynamic filtering";
+    public static final String EVALUATE_DAILY_UPDATE = "Evaluate Daily Update";
+    public static final String EVALUATE_DAILY_UPDATE_DESC = "Admin approves/rejects an update and its images";
+
+    // Engineer - Daily Updates
+    public static final String CREATE_DAILY_UPDATE = "Create Daily Update";
+    public static final String CREATE_DAILY_UPDATE_DESC = "Engineer creates a new daily update for a project item";
+    public static final String GET_MY_DAILY_UPDATES = "Get My Daily Updates";
+    public static final String GET_MY_DAILY_UPDATES_DESC = "Engineer views their own updates with optional filters";
+
+    // Client - Daily Updates
+    public static final String GET_APPROVED_ITEM_UPDATES_CLIENT = "Get Approved Item Updates (Client)";
+    public static final String GET_APPROVED_ITEM_UPDATES_CLIENT_DESC = "Client views only approved updates for a specific project item";
 }
+

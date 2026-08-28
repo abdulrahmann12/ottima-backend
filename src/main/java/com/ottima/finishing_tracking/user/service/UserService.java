@@ -150,6 +150,9 @@ public class UserService {
     @CacheEvict(value = "users", allEntries = true)
     public void activateUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (user.isActive()) {
+            throw new UserAlreadyActivatedException();
+        }
         user.setActive(true);
         user.setDeletesAt(null);
         userRepository.save(user);

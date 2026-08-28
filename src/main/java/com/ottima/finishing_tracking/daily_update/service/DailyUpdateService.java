@@ -1,0 +1,123 @@
+package com.ottima.finishing_tracking.daily_update.service;
+
+import com.ottima.finishing_tracking.daily_update.dto.request.CreateDailyUpdateRequest;
+import com.ottima.finishing_tracking.daily_update.dto.request.EvaluateDailyUpdateRequest;
+import com.ottima.finishing_tracking.daily_update.dto.response.DailyUpdateResponse;
+import com.ottima.finishing_tracking.daily_update.entity.DailyUpdate;
+import com.ottima.finishing_tracking.daily_update.enums.UpdateStatus;
+import com.ottima.finishing_tracking.daily_update.mapper.DailyUpdateMapper;
+import com.ottima.finishing_tracking.daily_update.repository.DailyUpdateRepository;
+import com.ottima.finishing_tracking.exception.DailyUpdateNotFoundException;
+import com.ottima.finishing_tracking.exception.ProjectAccessDeniedException;
+import com.ottima.finishing_tracking.exception.ProjectItemNotFoundException;
+import com.ottima.finishing_tracking.project.entity.ProjectItem;
+import com.ottima.finishing_tracking.project.repository.ProjectItemRepository;
+import com.ottima.finishing_tracking.security.AuthenticatedUserService;
+import com.ottima.finishing_tracking.user.entity.User;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Validated
+public class DailyUpdateService {
+
+    private final DailyUpdateRepository dailyUpdateRepository;
+    private final ProjectItemRepository projectItemRepository;
+    private final DailyUpdateMapper dailyUpdateMapper;
+    private final AuthenticatedUserService authenticatedUserService;
+
+    @Transactional
+    public DailyUpdateResponse createDailyUpdate(UUID projectId, @Valid CreateDailyUpdateRequest request) {
+        ProjectItem projectItem = projectItemRepository.findByProjectItemIdAndProject_ProjectId(request.getProjectItemId(), projectId)
+                .orElseThrow(ProjectItemNotFoundException::new);
+
+        User currentEngineer = authenticatedUserService.getCurrentUser();
+
+        DailyUpdate dailyUpdate = dailyUpdateMapper.toEntity(request);
+
+        dailyUpdate.setProjectItem(projectItem);
+        dailyUpdate.setEngineer(currentEngineer);
+
+        DailyUpdate savedUpdate = dailyUpdateRepository.save(dailyUpdate);
+
+        DailyUpdate fullUpdate = dailyUpdateRepository.findById(savedUpdate.getDailyUpdateId())
+                .orElseThrow(DailyUpdateNotFoundException::new);
+
+        return dailyUpdateMapper.toResponse(fullUpdate,false);
+    }
+
+    public Page<DailyUpdateResponse> getUpdatesForAdmin(
+            UUID projectId,
+            UUID projectItemId,
+            Long engineerId,
+            UpdateStatus status,
+            Pageable pageable) {
+
+        return dailyUpdateRepository.findFilteredUpdates(
+                projectId, projectItemId, engineerId, status, pageable
+        ).map(update -> dailyUpdateMapper.toResponse(update, false));
+    }
+
+    public Page<DailyUpdateResponse> getMyUpdatesAsEngineer(
+            UUID projectId,
+            UUID projectItemId,
+            UpdateStatus status,
+            Pageable pageable) {
+
+        Long currentEngineerId = authenticatedUserService.getCurrentUser().getUserId();
+
+        return dailyUpdateRepository.findFilteredUpdates(
+                projectId, projectItemId, currentEngineerId, status, pageable
+        ).map(update -> dailyUpdateMapper.toResponse(update, false));
+    }
+
+    public Page<DailyUpdateResponse> getUpdatesForClient(UUID projectItemId, Pageable pageable) {
+        Long currentClientId = authenticatedUserService.getCurrentUser().getUserId();
+
+        ProjectItem projectItem = projectItemRepository.findById(projectItemId)
+                .orElseThrow(ProjectItemNotFoundException::new);
+
+        if (!projectItem.getProject().getClient().getUserId().equals(currentClientId)) {
+            throw new ProjectAccessDeniedException();
+        }
+
+        return dailyUpdateRepository.findAllByProjectItem_ProjectItemIdAndStatusOrderByCreatedAtDesc(
+                projectItemId, UpdateStatus.APPROVED, pageable
+        ).map(update -> dailyUpdateMapper.toResponse(update, true));
+    }
+
+    @Transactional
+    public DailyUpdateResponse evaluateDailyUpdate(UUID dailyUpdateId, @Valid EvaluateDailyUpdateRequest request) {
+
+        DailyUpdate dailyUpdate = dailyUpdateRepository.findById(dailyUpdateId)
+                .orElseThrow(DailyUpdateNotFoundException::new);
+
+        dailyUpdate.setStatus(request.getStatus());
+        dailyUpdate.setNotes(request.getNotes());
+        dailyUpdate.setTitle(request.getTitle());
+
+        User currentAdmin = authenticatedUserService.getCurrentUser();
+        dailyUpdate.setApprovedByAdmin(currentAdmin);
+
+        if (request.getImageEvaluations() != null && dailyUpdate.getImages() != null) {
+            for (EvaluateDailyUpdateRequest.ImageEvaluation eval : request.getImageEvaluations()) {
+                dailyUpdate.getImages().stream()
+                        .filter(img -> img.getUpdateImageId().equals(eval.getUpdateImageId()))
+                        .findFirst()
+                        .ifPresent(img -> img.setApproved(eval.getApproved()));
+            }
+        }
+        DailyUpdate savedUpdate = dailyUpdateRepository.save(dailyUpdate);
+
+        return dailyUpdateMapper.toResponse(savedUpdate,false);
+    }
+}

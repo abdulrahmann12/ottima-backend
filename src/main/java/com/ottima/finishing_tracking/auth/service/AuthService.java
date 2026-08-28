@@ -144,6 +144,7 @@ public class AuthService {
         if(user.getRequestCodeExpiresAt() == null || Instant.now().isAfter(user.getRequestCodeExpiresAt())) {
             user.setRequestCode(null);
             user.setRequestCodeExpiresAt(null);
+            userRepository.save(user);
             throw new VerificationCodeExpiredException();
         }
 

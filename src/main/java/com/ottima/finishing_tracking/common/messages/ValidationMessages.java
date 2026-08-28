@@ -55,4 +55,14 @@ public class ValidationMessages {
     public static final String WEIGHT_MAX = "Weight percentage cannot exceed 100";
     public static final String PROGRESS_REQUIRED = "Completion percentage is required";
     public static final String PROGRESS_MIN = "Completion percentage cannot be less than 0";
+
+    //========================= Daily Update =========================
+    public static final String PROJECT_ITEM_ID_REQUIRED = "Project item ID is required";
+    public static final String TITLE_REQUIRED = "Title is required";
+    public static final String UPDATE_STATUS_REQUIRED = "Status is required";
+    public static final String UPDATE_IMAGE_ID_REQUIRED = "Image ID is required";
+    public static final String APPROVAL_STATUS_REQUIRED = "Approval status is required";
+    public static final String TITLE_SIZE = "Title must be between 1 and 255 characters";
+    public static final String NOTES_SIZE = "Notes must be less than 2000 characters";
 }
+

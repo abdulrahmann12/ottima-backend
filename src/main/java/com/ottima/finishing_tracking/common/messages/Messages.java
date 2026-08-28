@@ -122,4 +122,13 @@ public class Messages {
     public static final String PROJECT_ITEM_NOT_FOUND = "Project item not found";
     public static final String PROJECT_ITEM_ALREADY_EXISTS = "This item has already been added to the project";
     public static final String WEIGHT_LIMIT_EXCEEDED = "Total project items weight cannot exceed 100%";
+
+    //========================= Daily Update ============================
+    public static final String DAILY_UPDATE_CREATED = "Daily update created successfully";
+    public static final String DAILY_UPDATE_FETCHED = "Daily update fetched successfully";
+    public static final String DAILY_UPDATES_FETCHED = "Daily updates fetched successfully";
+    public static final String DAILY_UPDATE_EVALUATED = "Daily update evaluated successfully";
+    public static final String DAILY_UPDATE_NOT_FOUND = "Daily update not found";
+    public static final String DAILY_UPDATE_IMAGE_NOT_FOUND = "Daily update image not found";
 }
+
