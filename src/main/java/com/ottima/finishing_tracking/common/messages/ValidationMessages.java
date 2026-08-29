@@ -70,6 +70,16 @@ public class ValidationMessages {
     public static final String COMMENT_TEXT_SIZE = "Comment must be less than 1000 characters";
     public static final String ADMIN_REPLY_REQUIRED = "Admin reply cannot be blank";
     public static final String ADMIN_REPLY_SIZE = "Admin reply must be less than 1000 characters";
+
+    //========================= Financial =========================
+    public static final String FINANCIAL_RECORD_TYPE_REQUIRED = "Record type is required";
+    public static final String FINANCIAL_AMOUNT_REQUIRED = "Amount is required";
+    public static final String FINANCIAL_AMOUNT_POSITIVE = "Amount must be greater than zero";
+    public static final String FINANCIAL_PAYMENT_METHOD_REQUIRED = "Payment method is required";
+    public static final String FINANCIAL_TRANSACTION_DATE_REQUIRED = "Transaction date is required";
+    public static final String FINANCIAL_NOTES_SIZE = "Notes must be less than 500 characters";
+    public static final String FINANCIAL_DOCUMENT_URL_SIZE = "Document URL must be less than 2048 characters";
 }
+
 
 

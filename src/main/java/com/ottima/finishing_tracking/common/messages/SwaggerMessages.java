@@ -233,7 +233,42 @@ public class SwaggerMessages {
     public static final String EDIT_COMMENT_DESC = "Client edits their own comment, only if it has not yet been replied to by an admin";
     public static final String DELETE_COMMENT_CLIENT = "Delete Comment (Client)";
     public static final String DELETE_COMMENT_CLIENT_DESC = "Client deletes their own comment";
+
+    //========================= Financial Tag ===============================
+    public static final String TAG_FINANCIAL_ADMIN = "Admin - Financial Management";
+    public static final String TAG_FINANCIAL_ADMIN_DESC = "Admin endpoints for creating, updating, and deleting financial records for projects";
+    public static final String TAG_FINANCIAL_CLIENT = "Client - Financial Dashboard";
+    public static final String TAG_FINANCIAL_CLIENT_DESC = "Client endpoints for viewing financial records and summaries for their own projects";
+
+    // Admin - Financial Records
+    public static final String CREATE_FINANCIAL_RECORD = "Create Financial Record";
+    public static final String CREATE_FINANCIAL_RECORD_DESC = "Admin adds a new deposit or expense record to a project";
+    public static final String UPDATE_FINANCIAL_RECORD = "Update Financial Record";
+    public static final String UPDATE_FINANCIAL_RECORD_DESC = "Admin edits an existing financial record by its ID";
+    public static final String DELETE_FINANCIAL_RECORD = "Delete Financial Record";
+    public static final String DELETE_FINANCIAL_RECORD_DESC = "Admin removes a financial record by its ID";
+    public static final String GET_ALL_FINANCIAL_RECORDS_ADMIN = "Get All Financial Records (Admin)";
+    public static final String GET_ALL_FINANCIAL_RECORDS_ADMIN_DESC = "Admin retrieves a paginated list of all financial records for a specific project";
+    public static final String GET_FINANCIAL_RECORD_BY_ID_ADMIN = "Get Financial Record by ID (Admin)";
+    public static final String GET_FINANCIAL_RECORD_BY_ID_ADMIN_DESC = "Admin retrieves a single financial record by its unique ID";
+    public static final String GET_FINANCIAL_RECORDS_BY_TYPE_ALL = "Get Financial Records by Type (All Projects)";
+    public static final String GET_FINANCIAL_RECORDS_BY_TYPE_ALL_DESC = "Admin retrieves paginated financial records filtered by type (DEPOSIT/EXPENSE) across all projects";
+    public static final String GET_FINANCIAL_RECORDS_BY_TYPE_ONE = "Get Financial Records by Type (One Project)";
+    public static final String GET_FINANCIAL_RECORDS_BY_TYPE_ONE_DESC = "Admin retrieves paginated financial records filtered by type for a specific project";
+
+    // Client - Financial Records
+    public static final String GET_FINANCIAL_SUMMARY_CLIENT = "Get Financial Summary (Client)";
+    public static final String GET_FINANCIAL_SUMMARY_CLIENT_DESC = "Client views their project's total paid, total spent, and remaining balance";
+    public static final String GET_INVOICES_GALLERY_CLIENT = "Get Invoices Gallery (Client)";
+    public static final String GET_INVOICES_GALLERY_CLIENT_DESC = "Client views all uploaded official invoices and receipts for their project";
+    public static final String GET_ALL_FINANCIAL_RECORDS_CLIENT = "Get All Financial Records (Client)";
+    public static final String GET_ALL_FINANCIAL_RECORDS_CLIENT_DESC = "Client retrieves a paginated list of all financial records for their own project";
+    public static final String GET_FINANCIAL_RECORD_BY_ID_CLIENT = "Get Financial Record by ID (Client)";
+    public static final String GET_FINANCIAL_RECORD_BY_ID_CLIENT_DESC = "Client retrieves a specific financial record from their project by its ID";
+    public static final String GET_FINANCIAL_RECORDS_BY_TYPE_CLIENT = "Get Financial Records by Type (Client)";
+    public static final String GET_FINANCIAL_RECORDS_BY_TYPE_CLIENT_DESC = "Client retrieves financial records filtered by type (DEPOSIT/EXPENSE) for their own project";
 }
+
 
 
 

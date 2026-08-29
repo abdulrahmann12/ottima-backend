@@ -142,7 +142,18 @@ public class Messages {
     public static final String COMMENT_ACCESS_DENIED = "You do not have permission to modify or delete this comment.";
     public static final String CANNOT_DELETE_COMMENT = "Cannot edit a comment that has already been replied to by an admin.";
 
+    //========================= Financial ============================
+    public static final String FINANCIAL_RECORD_CREATED = "Financial record created successfully";
+    public static final String FINANCIAL_RECORD_UPDATED = "Financial record updated successfully";
+    public static final String FINANCIAL_RECORD_DELETED = "Financial record deleted successfully";
+    public static final String FINANCIAL_RECORD_FETCHED = "Financial record fetched successfully";
+    public static final String FINANCIAL_RECORDS_FETCHED = "Financial records fetched successfully";
+    public static final String FINANCIAL_SUMMARY_FETCHED = "Financial summary fetched successfully";
+    public static final String INVOICES_GALLERY_FETCHED = "Invoices gallery fetched successfully";
+    public static final String FINANCIAL_RECORD_NOT_FOUND = "Financial record not found";
+    public static final String FINANCIAL_RECORD_ITEM_MISMATCH = "The specified project item does not belong to the same project as this financial record";
 
 }
+
 
 

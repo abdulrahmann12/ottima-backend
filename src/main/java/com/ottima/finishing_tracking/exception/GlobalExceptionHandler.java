@@ -92,6 +92,8 @@ public class GlobalExceptionHandler {
             ProjectItemNotFoundException.class,
             DailyUpdateNotFoundException.class,
             CommentNotFoundException.class,
+            FinancialRecordNotFoundException.class,
+
 
     })
     public ResponseEntity<BaseResponse> handleNotFoundBusinessExceptions(Exception ex, WebRequest request) {
@@ -167,6 +169,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<BaseResponse> handleWeightLimitExceeded(WeightLimitExceededException ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    @ExceptionHandler(ProjectItemMismatchException.class)
+    public ResponseEntity<BaseResponse> handleProjectItemMismatch(ProjectItemMismatchException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
+    }
+
     // === Validation Exceptions === //
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
