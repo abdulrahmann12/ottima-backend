@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.admin.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.admin.dto.response.DashboardSummaryResponse;
 import com.ottima.finishing_tracking.user.dto.request.CreateUserRequest;
 import com.ottima.finishing_tracking.user.dto.response.UserResponse;
@@ -24,6 +28,7 @@ public class AdminService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.ADMIN_ENTITY, details = Messages.ADMIN_CREATED_LOG)
     @Transactional
     public UserResponse createAdmin(@Valid CreateUserRequest request) {
         User savedAdmin = userService.createBaseUser(request, "ADMIN");

@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.standard_item.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.exception.StandardItemAlreadyExistsException;
 import com.ottima.finishing_tracking.exception.StandardItemInUseException;
 import com.ottima.finishing_tracking.exception.StandardItemNotFoundException;
@@ -30,6 +34,7 @@ public class StandardItemService {
     private final StandardItemMapper standardItemMapper;
     private final ProjectItemRepository projectItemRepository;
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.STANDARD_ITEM_ENTITY, details = Messages.STANDARD_ITEM_CREATED_LOG)
     @Transactional
     public StandardItemResponse create(@Valid StandardItemRequest request) {
         if (standardItemRepository.existsByNameArOrNameEn(request.getNameAr(), request.getNameEn())) {
@@ -41,6 +46,7 @@ public class StandardItemService {
         return standardItemMapper.toResponse(savedItem);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.STANDARD_ITEM_ENTITY, details = Messages.STANDARD_ITEM_UPDATED_LOG)
     @Transactional
     public StandardItemResponse update(UUID itemId, @Valid StandardItemRequest request) {
         StandardItem item = getEntityById(itemId);
@@ -64,6 +70,7 @@ public class StandardItemService {
                 .map(standardItemMapper::toResponse);
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.STANDARD_ITEM_ENTITY, details = Messages.STANDARD_ITEM_DELETED_LOG)
     @Transactional
     public void delete(UUID itemId) {
         StandardItem item = getEntityById(itemId);

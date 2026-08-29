@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.financial.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.exception.*;
 import com.ottima.finishing_tracking.financial.dto.request.CreateFinancialRecordRequest;
 import com.ottima.finishing_tracking.financial.dto.request.UpdateFinancialRecordRequest;
@@ -37,6 +41,7 @@ public class FinancialService {
     private final FinancialRecordMapper financialRecordMapper;
     private final AuthenticatedUserService authenticatedUserService;
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_CREATED_LOG)
     @Transactional
     public FinancialRecordResponse createFinancialRecord(UUID projectId, @Valid CreateFinancialRecordRequest request) {
         Project project = projectRepository.findById(projectId)
@@ -56,6 +61,7 @@ public class FinancialService {
         return financialRecordMapper.toResponse(savedRecord);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_UPDATED_LOG)
     @Transactional
     public FinancialRecordResponse updateFinancialRecord(UUID financialRecordId, @Valid UpdateFinancialRecordRequest request) {
         FinancialRecord record = financialRecordRepository.findById(financialRecordId)
@@ -85,6 +91,7 @@ public class FinancialService {
         return financialRecordMapper.toResponse(updatedRecord);
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_DELETED_LOG)
     @Transactional
     public void deleteFinancialRecord(UUID financialRecordId) {
         FinancialRecord record = financialRecordRepository.findById(financialRecordId)

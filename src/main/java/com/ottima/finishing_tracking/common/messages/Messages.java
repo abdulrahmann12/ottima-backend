@@ -170,7 +170,41 @@ public class Messages {
     public static final String TICKET_DELETE_DENIED = "You can only delete tickets you sent";
     public static final String TICKET_ALREADY_PROCESSED = "Cannot modify a ticket that has already been viewed or processed";
 
+    //========================= Activity Logs =====================
+    public static final String USER_CREATED_LOG = "Admin created a new user account";
+    public static final String USER_UPDATED_LOG = "User profile was updated";
+    public static final String USER_DELETED_LOG = "User account was deactivated";
+    public static final String USER_ACTIVATED_LOG = "User account was activated";
+    public static final String ADMIN_CREATED_LOG = "A new admin account was created";
+    public static final String ENGINEER_CREATED_LOG = "A new engineer account was created";
+    public static final String CLIENT_CREATED_LOG = "A new client account was created";
+    public static final String STANDARD_ITEM_CREATED_LOG = "A new standard item was created";
+    public static final String STANDARD_ITEM_UPDATED_LOG = "A standard item was updated";
+    public static final String STANDARD_ITEM_DELETED_LOG = "A standard item was deleted";
+    public static final String PROJECT_CREATED_LOG = "A new project was created";
+    public static final String PROJECT_UPDATED_LOG = "Project details were updated";
+    public static final String PROJECT_DELETED_LOG = "A project was soft-deleted";
+    public static final String PROJECT_STATUS_CHANGED_LOG = "Project status was changed";
+    public static final String PROJECT_ITEMS_ASSIGNED_LOG = "Items were assigned to the project";
+    public static final String PROJECT_ITEM_CONFIG_UPDATED_LOG = "Project item configuration was updated";
+    public static final String PROJECT_ITEM_REMOVED_LOG = "An item was removed from the project";
+    public static final String PROJECT_ITEM_PROGRESS_UPDATED_LOG = "Project item progress was updated";
+    public static final String DAILY_UPDATE_CREATED_LOG = "Engineer submitted a new daily update";
+    public static final String DAILY_UPDATE_EVALUATED_LOG = "Daily update was evaluated by admin";
+    public static final String COMMENT_ADDED_LOG = "A comment was added to a daily update";
+    public static final String COMMENT_UPDATED_LOG = "A comment was edited";
+    public static final String COMMENT_DELETED_LOG = "A comment was deleted";
+    public static final String COMMENT_REPLIED_LOG = "Admin replied to a comment";
+    public static final String FINANCIAL_RECORD_CREATED_LOG = "A new financial record was created";
+    public static final String FINANCIAL_RECORD_UPDATED_LOG = "A financial record was updated";
+    public static final String FINANCIAL_RECORD_DELETED_LOG = "A financial record was deleted";
+    public static final String TICKET_CREATED_LOG = "User created a new internal ticket";
+    public static final String TICKET_UPDATED_LOG = "An internal ticket was updated";
+    public static final String TICKET_STATUS_UPDATED_LOG = "Internal ticket status was updated";
+    public static final String TICKET_DELETED_LOG = "An internal ticket was deleted";
+
 }
+
 
 
 

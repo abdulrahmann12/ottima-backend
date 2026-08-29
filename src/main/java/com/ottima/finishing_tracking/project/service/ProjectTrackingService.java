@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.project.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.exception.ProjectItemNotFoundException;
 import com.ottima.finishing_tracking.project.dto.request.UpdateItemProgressRequest;
 import com.ottima.finishing_tracking.project.dto.response.ProjectItemResponse;
@@ -19,6 +23,7 @@ public class ProjectTrackingService {
     private final ProjectItemRepository projectItemRepository;
     private final ProjectItemMapper projectItemMapper;
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_PROGRESS_UPDATED_LOG)
     @Transactional
     public ProjectItemResponse updateItemProgress(UUID projectId, UUID itemId, UpdateItemProgressRequest request) {
 

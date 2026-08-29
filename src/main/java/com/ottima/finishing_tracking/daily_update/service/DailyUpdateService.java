@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.daily_update.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.daily_update.dto.request.CreateDailyUpdateRequest;
 import com.ottima.finishing_tracking.daily_update.dto.request.EvaluateDailyUpdateRequest;
 import com.ottima.finishing_tracking.daily_update.dto.response.DailyUpdateResponse;
@@ -35,6 +39,7 @@ public class DailyUpdateService {
     private final DailyUpdateMapper dailyUpdateMapper;
     private final AuthenticatedUserService authenticatedUserService;
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.DAILY_UPDATE_ENTITY, details = Messages.DAILY_UPDATE_CREATED_LOG)
     @Transactional
     public DailyUpdateResponse createDailyUpdate(UUID projectId, @Valid CreateDailyUpdateRequest request) {
         ProjectItem projectItem = projectItemRepository.findByProjectItemIdAndProject_ProjectId(request.getProjectItemId(), projectId)
@@ -95,6 +100,7 @@ public class DailyUpdateService {
         ).map(update -> dailyUpdateMapper.toResponse(update, true));
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.DAILY_UPDATE_ENTITY, details = Messages.DAILY_UPDATE_EVALUATED_LOG)
     @Transactional
     public DailyUpdateResponse evaluateDailyUpdate(UUID dailyUpdateId, @Valid EvaluateDailyUpdateRequest request) {
 

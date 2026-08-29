@@ -20,6 +20,9 @@ import com.ottima.finishing_tracking.standard_item.repository.StandardItemReposi
 import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
 import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,7 @@ public class ProjectAdminService {
     // Project Management
     // ==========================================
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_CREATED_LOG)
     @Transactional
     public ProjectResponse createProject(CreateProjectRequest request) {
         User client = validateAndGetUserByRole(request.getClientId(), "CLIENT", Messages.USER_NOT_CLIENT,Messages.CLIENT_NOT_FOUND);
@@ -58,6 +62,7 @@ public class ProjectAdminService {
         return projectMapper.toResponse(savedProject);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_UPDATED_LOG)
     @Transactional
     public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest request) {
         Project project = getProjectById(projectId);
@@ -73,6 +78,7 @@ public class ProjectAdminService {
         return projectMapper.toResponse(updatedProject);
     }
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEMS_ASSIGNED_LOG)
     @Transactional
     public List<ProjectItemResponse> assignProjectItems(UUID projectId, AssignProjectItemsRequest request) {
         Project project = getProjectById(projectId);
@@ -146,6 +152,7 @@ public class ProjectAdminService {
         }
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_DELETED_LOG)
     @Transactional
     public void deleteProject(UUID projectId) {
         Project project = getProjectById(projectId);
@@ -153,6 +160,7 @@ public class ProjectAdminService {
         projectRepository.save(project);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_CONFIG_UPDATED_LOG)
     @Transactional
     public ProjectItemResponse updateProjectItemConfig(UUID projectId, UUID itemId, UpdateProjectItemConfigRequest request) {
         ProjectItem item = projectItemRepository.findByProjectItemIdAndProject_ProjectId(itemId, projectId)
@@ -166,6 +174,7 @@ public class ProjectAdminService {
         return projectItemMapper.toResponse(updatedItem);
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_REMOVED_LOG)
     @Transactional
     public void removeProjectItem(UUID projectId, UUID itemId) {
         ProjectItem item = projectItemRepository.findByProjectItemIdAndProject_ProjectId(itemId, projectId)
@@ -173,6 +182,7 @@ public class ProjectAdminService {
         projectItemRepository.delete(item);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_STATUS_CHANGED_LOG)
     @Transactional
     public void changeProjectStatus(UUID projectId, ProjectStatus newStatus) {
         Project project = getProjectById(projectId);

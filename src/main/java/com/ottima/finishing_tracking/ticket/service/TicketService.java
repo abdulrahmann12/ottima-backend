@@ -1,7 +1,10 @@
 package com.ottima.finishing_tracking.ticket.service;
 
 import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
 import com.ottima.finishing_tracking.exception.*;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.project.entity.Project;
 import com.ottima.finishing_tracking.project.repository.ProjectRepository;
@@ -44,6 +47,7 @@ public class TicketService {
     // === Core Business Logic (Create, Update, Delete) ===
     // ==========================================
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_CREATED_LOG)
     @Transactional
     public TicketResponse createTicket(UUID projectId, @Valid CreateTicketRequest request) {
         Project project = projectRepository.findById(projectId)
@@ -80,6 +84,7 @@ public class TicketService {
         return ticketMapper.toResponse(savedTicket);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_UPDATED_LOG)
     @Transactional
     public TicketResponse updateTicket(UUID ticketId, @Valid UpdateTicketRequest request) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
@@ -118,6 +123,7 @@ public class TicketService {
         return ticketMapper.toResponse(updatedTicket);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_STATUS_UPDATED_LOG)
     @Transactional
     public TicketResponse updateTicketStatus(UUID ticketId, UpdateTicketStatusRequest request) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
@@ -128,6 +134,7 @@ public class TicketService {
         return ticketMapper.toResponse(updatedTicket);
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_DELETED_LOG)
     @Transactional
     public void deleteTicket(UUID ticketId) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)

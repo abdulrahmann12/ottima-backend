@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.user.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.exception.*;
 import com.ottima.finishing_tracking.role.entity.Role;
 import com.ottima.finishing_tracking.role.repository.RoleRepository;
@@ -63,6 +67,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.USER_ENTITY, details = Messages.USER_UPDATED_LOG)
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public UserResponse updateMyProfile(@Valid UpdateProfileRequest request) {
@@ -83,6 +88,7 @@ public class UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.USER_ENTITY, details = Messages.USER_UPDATED_LOG)
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public UserResponse updateUserByAdmin(Long userId, @Valid AdminUpdateUserRequest request) {
@@ -134,6 +140,7 @@ public class UserService {
         return userRepository.findAllDeactivated(pageable).map(userMapper::toResponse);
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.USER_ENTITY, details = Messages.USER_DELETED_LOG)
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public void deleteUser(Long userId) {
@@ -146,6 +153,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.USER_ENTITY, details = Messages.USER_ACTIVATED_LOG)
     @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public void activateUser(Long userId) {

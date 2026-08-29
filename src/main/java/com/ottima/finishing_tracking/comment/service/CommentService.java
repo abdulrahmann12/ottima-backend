@@ -1,5 +1,9 @@
 package com.ottima.finishing_tracking.comment.service;
 
+import com.ottima.finishing_tracking.common.messages.Messages;
+import com.ottima.finishing_tracking.common.messages.Constants;
+import com.ottima.finishing_tracking.logging.annotation.LogActivity;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.comment.dto.request.AddCommentRequest;
 import com.ottima.finishing_tracking.comment.dto.request.EditCommentRequest;
 import com.ottima.finishing_tracking.comment.dto.request.ReplyCommentRequest;
@@ -35,6 +39,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final AuthenticatedUserService authenticatedUserService;
 
+    @LogActivity(actionType = ActionType.CREATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_ADDED_LOG)
     @Transactional
     public CommentResponse addComment(UUID dailyUpdateId, @Valid AddCommentRequest request) {
         DailyUpdate dailyUpdate = dailyUpdateRepository.findById(dailyUpdateId)
@@ -60,6 +65,7 @@ public class CommentService {
         return commentMapper.toResponse(commentRepository.save(comment));
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_REPLIED_LOG)
     @Transactional
     public CommentResponse replyToComment(UUID commentId, ReplyCommentRequest request) {
         Comment comment = commentRepository.findById(commentId)
@@ -79,6 +85,7 @@ public class CommentService {
                 .map(commentMapper::toResponse);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_UPDATED_LOG)
     @Transactional
     public CommentResponse editComment(UUID commentId, @Valid EditCommentRequest request) {
         Comment comment = commentRepository.findById(commentId)
@@ -100,6 +107,7 @@ public class CommentService {
         return commentMapper.toResponse(savedComment);
     }
 
+    @LogActivity(actionType = ActionType.DELETE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_DELETED_LOG)
     @Transactional
     public void deleteComment(UUID commentId, boolean isAdmin) {
         Comment comment = commentRepository.findById(commentId)
