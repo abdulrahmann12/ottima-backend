@@ -91,6 +91,8 @@ public class GlobalExceptionHandler {
             ProjectNotFoundException.class,
             ProjectItemNotFoundException.class,
             DailyUpdateNotFoundException.class,
+            CommentNotFoundException.class,
+
     })
     public ResponseEntity<BaseResponse> handleNotFoundBusinessExceptions(Exception ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND);
@@ -106,6 +108,9 @@ public class GlobalExceptionHandler {
             StandardItemAlreadyExistsException.class,
             StandardItemInUseException.class,
             ProjectItemAlreadyExistsException.class,
+            UnapprovedDailyUpdateCommentException.class,
+            CommentAlreadyRepliedException.class,
+
 
     })
     public ResponseEntity<BaseResponse> handleConflictExceptions(Exception ex, WebRequest request) {
@@ -145,6 +150,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProjectAccessDeniedException.class)
     public ResponseEntity<BaseResponse> handleProjectAccessDenied(ProjectAccessDeniedException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(CommentAccessDeniedException.class)
+    public ResponseEntity<BaseResponse> handleCommentAccessDenied(CommentAccessDeniedException ex, WebRequest request) {
         return buildErrorResponse(ex, request, HttpStatus.FORBIDDEN);
     }
 

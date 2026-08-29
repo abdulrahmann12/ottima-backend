@@ -209,5 +209,31 @@ public class SwaggerMessages {
     // Client - Daily Updates
     public static final String GET_APPROVED_ITEM_UPDATES_CLIENT = "Get Approved Item Updates (Client)";
     public static final String GET_APPROVED_ITEM_UPDATES_CLIENT_DESC = "Client views only approved updates for a specific project item";
+
+    //========================= Comment Tag ===============================
+    public static final String TAG_COMMENT_ADMIN = "Admin - Comments";
+    public static final String TAG_COMMENT_ADMIN_DESC = "Endpoints for admins to reply to client comments on daily updates";
+    public static final String TAG_COMMENT_CLIENT = "Client - Comments";
+    public static final String TAG_COMMENT_CLIENT_DESC = "Endpoints for clients to add and view comments on approved daily updates";
+
+    // Admin - Comments
+    public static final String REPLY_TO_COMMENT = "Reply to Comment";
+    public static final String REPLY_TO_COMMENT_DESC = "Admin replies to a client's comment on a daily update";
+    public static final String GET_UPDATE_COMMENTS_ADMIN = "Get Update Comments (Admin)";
+    public static final String GET_UPDATE_COMMENTS_ADMIN_DESC = "Admin views all comments for a specific daily update";
+    public static final String DELETE_COMMENT_ADMIN = "Delete Comment (Admin)";
+    public static final String DELETE_COMMENT_ADMIN_DESC = "Admin deletes any comment regardless of ownership";
+
+    // Client - Comments
+    public static final String ADD_COMMENT = "Add Comment";
+    public static final String ADD_COMMENT_DESC = "Client adds a comment to an approved daily update they own";
+    public static final String GET_COMMENTS_CLIENT = "Get Comments (Client)";
+    public static final String GET_COMMENTS_CLIENT_DESC = "Client views all comments and admin replies for a specific daily update";
+    public static final String EDIT_COMMENT = "Edit Comment";
+    public static final String EDIT_COMMENT_DESC = "Client edits their own comment, only if it has not yet been replied to by an admin";
+    public static final String DELETE_COMMENT_CLIENT = "Delete Comment (Client)";
+    public static final String DELETE_COMMENT_CLIENT_DESC = "Client deletes their own comment";
 }
+
+
 

@@ -130,5 +130,19 @@ public class Messages {
     public static final String DAILY_UPDATE_EVALUATED = "Daily update evaluated successfully";
     public static final String DAILY_UPDATE_NOT_FOUND = "Daily update not found";
     public static final String DAILY_UPDATE_IMAGE_NOT_FOUND = "Daily update image not found";
+    public static final String CANNOT_COMMENT_ON_UNAPPROVED_UPDATE = "Cannot comment on unapproved daily updates";
+
+    //========================= Comment ============================
+    public static final String COMMENT_ADDED = "Comment added successfully";
+    public static final String COMMENT_UPDATED = "Comment updated successfully";
+    public static final String COMMENT_DELETED = "Comment deleted successfully";
+    public static final String COMMENT_REPLIED = "Reply added successfully";
+    public static final String COMMENTS_FETCHED = "Comments fetched successfully";
+    public static final String COMMENT_NOT_FOUND = "Comment not found";
+    public static final String COMMENT_ACCESS_DENIED = "You do not have permission to modify or delete this comment.";
+    public static final String CANNOT_DELETE_COMMENT = "Cannot edit a comment that has already been replied to by an admin.";
+
+
 }
+
 

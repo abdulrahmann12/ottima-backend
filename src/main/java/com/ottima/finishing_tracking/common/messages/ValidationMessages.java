@@ -64,5 +64,12 @@ public class ValidationMessages {
     public static final String APPROVAL_STATUS_REQUIRED = "Approval status is required";
     public static final String TITLE_SIZE = "Title must be between 1 and 255 characters";
     public static final String NOTES_SIZE = "Notes must be less than 2000 characters";
+
+    //========================= Comment =========================
+    public static final String COMMENT_TEXT_REQUIRED = "Comment text cannot be empty";
+    public static final String COMMENT_TEXT_SIZE = "Comment must be less than 1000 characters";
+    public static final String ADMIN_REPLY_REQUIRED = "Admin reply cannot be blank";
+    public static final String ADMIN_REPLY_SIZE = "Admin reply must be less than 1000 characters";
 }
+
 
