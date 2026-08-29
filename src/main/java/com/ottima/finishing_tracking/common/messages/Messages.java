@@ -153,7 +153,25 @@ public class Messages {
     public static final String FINANCIAL_RECORD_NOT_FOUND = "Financial record not found";
     public static final String FINANCIAL_RECORD_ITEM_MISMATCH = "The specified project item does not belong to the same project as this financial record";
 
+    //========================= Internal Ticket ============================
+    public static final String TICKET_CREATED = "Ticket created successfully";
+    public static final String TICKET_UPDATED = "Ticket updated successfully";
+    public static final String TICKET_STATUS_UPDATED = "Ticket status updated successfully";
+    public static final String TICKET_DELETED = "Ticket deleted successfully";
+    public static final String TICKET_FETCHED = "Ticket fetched successfully";
+    public static final String TICKETS_FETCHED = "Project tickets fetched successfully";
+    public static final String TICKET_INBOX_FETCHED = "Inbox fetched successfully";
+    public static final String TICKET_SENT_FETCHED = "Sent requests fetched successfully";
+    public static final String TICKET_USER_FETCHED = "User tickets fetched successfully";
+    public static final String TICKET_NOT_FOUND = "Internal ticket not found";
+    public static final String TICKET_CLIENT_SEND_DENIED = "Clients are not allowed to send internal tickets";
+    public static final String TICKET_CLIENT_RECEIVE_DENIED = "Clients are not allowed to receive internal tickets";
+    public static final String TICKET_UPDATE_DENIED = "You can only update tickets you sent";
+    public static final String TICKET_DELETE_DENIED = "You can only delete tickets you sent";
+    public static final String TICKET_ALREADY_PROCESSED = "Cannot modify a ticket that has already been viewed or processed";
+
 }
+
 
 
 

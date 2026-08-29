@@ -79,7 +79,18 @@ public class ValidationMessages {
     public static final String FINANCIAL_TRANSACTION_DATE_REQUIRED = "Transaction date is required";
     public static final String FINANCIAL_NOTES_SIZE = "Notes must be less than 500 characters";
     public static final String FINANCIAL_DOCUMENT_URL_SIZE = "Document URL must be less than 2048 characters";
+
+    //========================= Internal Ticket =========================
+    public static final String TICKET_RECEIVER_REQUIRED = "Receiver ID is required";
+    public static final String TICKET_TYPE_REQUIRED = "Ticket type is required";
+    public static final String TICKET_TITLE_REQUIRED = "Title is required";
+    public static final String TICKET_TITLE_SIZE = "Title cannot exceed 255 characters";
+    public static final String TICKET_AMOUNT_POSITIVE = "Amount cannot be negative";
+    public static final String TICKET_STATUS_REQUIRED = "Status is required";
+    public static final String TICKET_ATTACHMENT_URL_REQUIRED = "File URL cannot be blank";
+    public static final String TICKET_ATTACHMENT_TYPE_REQUIRED = "File type is required";
 }
+
 
 
 

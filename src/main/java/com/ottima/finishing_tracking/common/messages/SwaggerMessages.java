@@ -267,7 +267,32 @@ public class SwaggerMessages {
     public static final String GET_FINANCIAL_RECORD_BY_ID_CLIENT_DESC = "Client retrieves a specific financial record from their project by its ID";
     public static final String GET_FINANCIAL_RECORDS_BY_TYPE_CLIENT = "Get Financial Records by Type (Client)";
     public static final String GET_FINANCIAL_RECORDS_BY_TYPE_CLIENT_DESC = "Client retrieves financial records filtered by type (DEPOSIT/EXPENSE) for their own project";
+
+    //========================= Internal Ticket Tag ===============================
+    public static final String TAG_TICKET = "Internal Tickets";
+    public static final String TAG_TICKET_DESC = "Private communication channel between Admins and Engineers for project-level requests";
+
+    // Operations
+    public static final String CREATE_TICKET = "Create Internal Ticket";
+    public static final String CREATE_TICKET_DESC = "Send a new internal ticket (expense, request, note) to an Admin or Engineer";
+    public static final String UPDATE_TICKET = "Update Ticket";
+    public static final String UPDATE_TICKET_DESC = "Edit ticket details — only allowed if the ticket is still PENDING and you are the sender";
+    public static final String UPDATE_TICKET_STATUS = "Change Ticket Status";
+    public static final String UPDATE_TICKET_STATUS_DESC = "Update the ticket status to VIEWED, APPROVED, or REJECTED";
+    public static final String DELETE_TICKET = "Delete Ticket";
+    public static final String DELETE_TICKET_DESC = "Remove a ticket — only allowed if the ticket is still PENDING and you are the sender";
+    public static final String GET_TICKET_BY_ID = "Get Ticket by ID";
+    public static final String GET_TICKET_BY_ID_DESC = "Retrieve the full details of a single ticket by its unique ID";
+    public static final String GET_TICKETS_BY_PROJECT = "Get Tickets by Project";
+    public static final String GET_TICKETS_BY_PROJECT_DESC = "Retrieve all internal tickets linked to a specific project";
+    public static final String GET_MY_INBOX = "Get My Inbox";
+    public static final String GET_MY_INBOX_DESC = "View all tickets received by the currently authenticated user";
+    public static final String GET_MY_SENT = "Get My Sent Requests";
+    public static final String GET_MY_SENT_DESC = "View all tickets sent by the currently authenticated user";
+    public static final String GET_TICKETS_BY_USER = "Get All Tickets for a User (Admin)";
+    public static final String GET_TICKETS_BY_USER_DESC = "Admin-only: retrieve all tickets sent or received by a specific user";
 }
+
 
 
 

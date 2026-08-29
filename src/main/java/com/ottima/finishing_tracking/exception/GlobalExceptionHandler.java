@@ -93,6 +93,7 @@ public class GlobalExceptionHandler {
             DailyUpdateNotFoundException.class,
             CommentNotFoundException.class,
             FinancialRecordNotFoundException.class,
+            TicketNotFoundException.class,
 
 
     })
@@ -112,6 +113,7 @@ public class GlobalExceptionHandler {
             ProjectItemAlreadyExistsException.class,
             UnapprovedDailyUpdateCommentException.class,
             CommentAlreadyRepliedException.class,
+            TicketAlreadyProcessedException.class,
 
 
     })
