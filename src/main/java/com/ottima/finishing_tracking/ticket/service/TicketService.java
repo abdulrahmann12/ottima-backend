@@ -5,6 +5,8 @@ import com.ottima.finishing_tracking.common.messages.Constants;
 import com.ottima.finishing_tracking.exception.*;
 import com.ottima.finishing_tracking.logging.annotation.LogActivity;
 import com.ottima.finishing_tracking.logging.enums.ActionType;
+import com.ottima.finishing_tracking.notification.event.TicketCreatedEvent;
+import com.ottima.finishing_tracking.notification.event.TicketStatusChangedEvent;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.project.entity.Project;
 import com.ottima.finishing_tracking.project.repository.ProjectRepository;
@@ -21,6 +23,7 @@ import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,7 @@ public class TicketService {
     private final UserRepository userRepository;
     private final TicketMapper ticketMapper;
     private final AuthenticatedUserService authenticatedUserService;
+    private final ApplicationEventPublisher eventPublisher;
 
     // ==========================================
     // === Core Business Logic (Create, Update, Delete) ===
@@ -81,6 +85,16 @@ public class TicketService {
         }
 
         InternalTicket savedTicket = internalTicketRepository.save(ticket);
+
+        eventPublisher.publishEvent(TicketCreatedEvent.builder()
+                .ticketId(savedTicket.getTicketId())
+                .receiverId(savedTicket.getReceiver().getUserId())
+                .senderRole(currentSender.getRole().getRoleName())
+                .senderNameAR(currentSender.getFullNameAr())
+                .senderNameEn(currentSender.getFullNameEn())
+                .ticketTitle(savedTicket.getTitle())
+                .build());
+
         return ticketMapper.toResponse(savedTicket);
     }
 
@@ -131,6 +145,14 @@ public class TicketService {
 
         ticket.setStatus(request.getStatus());
         InternalTicket updatedTicket = internalTicketRepository.save(ticket);
+
+        eventPublisher.publishEvent(TicketStatusChangedEvent.builder()
+                .ticketId(updatedTicket.getTicketId())
+                .engineerId(updatedTicket.getSender().getUserId())
+                .ticketTitle(updatedTicket.getTitle())
+                .newStatus(updatedTicket.getStatus().name())
+                .build());
+
         return ticketMapper.toResponse(updatedTicket);
     }
 

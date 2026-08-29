@@ -15,10 +15,12 @@ import com.ottima.finishing_tracking.daily_update.entity.DailyUpdate;
 import com.ottima.finishing_tracking.daily_update.enums.UpdateStatus;
 import com.ottima.finishing_tracking.daily_update.repository.DailyUpdateRepository;
 import com.ottima.finishing_tracking.exception.*;
+import com.ottima.finishing_tracking.notification.event.CommentEvent;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class CommentService {
     private final DailyUpdateRepository dailyUpdateRepository;
     private final CommentMapper commentMapper;
     private final AuthenticatedUserService authenticatedUserService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_ADDED_LOG)
     @Transactional
@@ -62,6 +65,19 @@ public class CommentService {
                 .clientComment(request.getClientComment())
                 .build();
 
+        Comment savedComment = commentRepository.save(comment);
+
+        if (dailyUpdate.getApprovedByAdmin() != null) {
+            eventPublisher.publishEvent(CommentEvent.builder()
+                    .commentId(savedComment.getId())
+                    .receiverId(dailyUpdate.getApprovedByAdmin().getUserId())
+                    .senderName(currentClient.getUsername())
+                    .projectNameEn(dailyUpdate.getProjectItem().getProject().getNameEn())
+                    .projectNameAr(dailyUpdate.getProjectItem().getProject().getNameAr())
+                    .isReply(false)
+                    .build());
+        }
+
         return commentMapper.toResponse(commentRepository.save(comment));
     }
 
@@ -76,6 +92,17 @@ public class CommentService {
         comment.setAdminReply(request.getAdminReply());
         comment.setRepliedByAdmin(currentAdmin);
         comment.setRepliedAt(Instant.now());
+
+        Comment savedComment = commentRepository.save(comment);
+
+        eventPublisher.publishEvent(CommentEvent.builder()
+                .commentId(savedComment.getId())
+                .receiverId(savedComment.getClient().getUserId())
+                .senderName(currentAdmin.getUsername())
+                .projectNameAr(savedComment.getDailyUpdate().getProjectItem().getProject().getNameAr())
+                .projectNameEn(savedComment.getDailyUpdate().getProjectItem().getProject().getNameEn())
+                .isReply(true)
+                .build());
 
         return commentMapper.toResponse(commentRepository.save(comment));
     }

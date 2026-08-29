@@ -14,12 +14,15 @@ import com.ottima.finishing_tracking.daily_update.repository.DailyUpdateReposito
 import com.ottima.finishing_tracking.exception.DailyUpdateNotFoundException;
 import com.ottima.finishing_tracking.exception.ProjectAccessDeniedException;
 import com.ottima.finishing_tracking.exception.ProjectItemNotFoundException;
+import com.ottima.finishing_tracking.notification.event.DailyUpdateStatusChangedEvent;
+import com.ottima.finishing_tracking.notification.event.DailyUpdateSubmittedEvent;
 import com.ottima.finishing_tracking.project.entity.ProjectItem;
 import com.ottima.finishing_tracking.project.repository.ProjectItemRepository;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,7 @@ public class DailyUpdateService {
     private final ProjectItemRepository projectItemRepository;
     private final DailyUpdateMapper dailyUpdateMapper;
     private final AuthenticatedUserService authenticatedUserService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.DAILY_UPDATE_ENTITY, details = Messages.DAILY_UPDATE_CREATED_LOG)
     @Transactional
@@ -56,6 +60,16 @@ public class DailyUpdateService {
 
         DailyUpdate fullUpdate = dailyUpdateRepository.findById(savedUpdate.getDailyUpdateId())
                 .orElseThrow(DailyUpdateNotFoundException::new);
+
+        Long targetAdminId = 2L;
+
+        eventPublisher.publishEvent(DailyUpdateSubmittedEvent.builder()
+                .dailyUpdateId(savedUpdate.getDailyUpdateId())
+                .adminId(targetAdminId)
+                .engineerName(currentEngineer.getUsername())
+                .projectNameAr(fullUpdate.getProjectItem().getProject().getNameAr())
+                .projectNameEn(fullUpdate.getProjectItem().getProject().getNameEn())
+                .build());
 
         return dailyUpdateMapper.toResponse(fullUpdate,false);
     }
@@ -123,6 +137,14 @@ public class DailyUpdateService {
             }
         }
         DailyUpdate savedUpdate = dailyUpdateRepository.save(dailyUpdate);
+
+        eventPublisher.publishEvent(DailyUpdateStatusChangedEvent.builder()
+                .dailyUpdateId(savedUpdate.getDailyUpdateId())
+                .engineerId(savedUpdate.getEngineer().getUserId())
+                .projectNameAr(savedUpdate.getProjectItem().getProject().getNameAr())
+                .projectNameEn(savedUpdate.getProjectItem().getProject().getNameEn())
+                .newStatus(savedUpdate.getStatus().name())
+                .build());
 
         return dailyUpdateMapper.toResponse(savedUpdate,false);
     }

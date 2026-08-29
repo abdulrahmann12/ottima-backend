@@ -94,6 +94,7 @@ public class GlobalExceptionHandler {
             CommentNotFoundException.class,
             FinancialRecordNotFoundException.class,
             TicketNotFoundException.class,
+            NotificationNotFoundException.class,
 
 
     })
