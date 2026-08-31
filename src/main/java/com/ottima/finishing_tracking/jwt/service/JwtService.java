@@ -1,5 +1,6 @@
 package com.ottima.finishing_tracking.jwt.service;
 
+import com.ottima.finishing_tracking.jwt.repository.TokenRepository;
 import com.ottima.finishing_tracking.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,13 +22,15 @@ import io.jsonwebtoken.io.Decoders;
 @RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${secret}")
+    @Value("${app.jwt.secret}")
     private String secret;
 
-    @Value("${expiration}")
+    @Value("${app.jwt.expiration}")
     private long expiration;
 
     private SecretKey signingKey;
+
+    private final TokenRepository tokenRepository;
 
     @PostConstruct
     private void init() {
@@ -53,7 +56,12 @@ public class JwtService {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+//        boolean isTokenValidInDatabase = tokenRepository.findByTokenWithUser(token)
+//                .map(t -> !t.isExpired() && !t.isRevoked())
+//                .orElse(false);
+        return (username.equals(userDetails.getUsername()))
+                && !isTokenExpired(token)
+                ;
     }
 
     public String extractUsername(String token) {

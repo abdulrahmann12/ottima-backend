@@ -11,9 +11,11 @@ import com.ottima.finishing_tracking.daily_update.entity.DailyUpdate;
 import com.ottima.finishing_tracking.daily_update.enums.UpdateStatus;
 import com.ottima.finishing_tracking.daily_update.mapper.DailyUpdateMapper;
 import com.ottima.finishing_tracking.daily_update.repository.DailyUpdateRepository;
+import com.ottima.finishing_tracking.exception.AdminNotFoundException;
 import com.ottima.finishing_tracking.exception.DailyUpdateNotFoundException;
 import com.ottima.finishing_tracking.exception.ProjectAccessDeniedException;
 import com.ottima.finishing_tracking.exception.ProjectItemNotFoundException;
+import com.ottima.finishing_tracking.user.repository.UserRepository;
 import com.ottima.finishing_tracking.notification.event.DailyUpdateStatusChangedEvent;
 import com.ottima.finishing_tracking.notification.event.DailyUpdateSubmittedEvent;
 import com.ottima.finishing_tracking.project.entity.ProjectItem;
@@ -39,6 +41,7 @@ public class DailyUpdateService {
 
     private final DailyUpdateRepository dailyUpdateRepository;
     private final ProjectItemRepository projectItemRepository;
+    private final UserRepository userRepository;
     private final DailyUpdateMapper dailyUpdateMapper;
     private final AuthenticatedUserService authenticatedUserService;
     private final ApplicationEventPublisher eventPublisher;
@@ -58,20 +61,20 @@ public class DailyUpdateService {
 
         DailyUpdate savedUpdate = dailyUpdateRepository.save(dailyUpdate);
 
-        DailyUpdate fullUpdate = dailyUpdateRepository.findById(savedUpdate.getDailyUpdateId())
-                .orElseThrow(DailyUpdateNotFoundException::new);
-
-        Long targetAdminId = 2L;
+        Long targetAdminId = userRepository
+                .findFirstActiveByRole_RoleName("ADMIN")
+                .orElseThrow(AdminNotFoundException::new)
+                .getUserId();
 
         eventPublisher.publishEvent(DailyUpdateSubmittedEvent.builder()
                 .dailyUpdateId(savedUpdate.getDailyUpdateId())
                 .adminId(targetAdminId)
                 .engineerName(currentEngineer.getUsername())
-                .projectNameAr(fullUpdate.getProjectItem().getProject().getNameAr())
-                .projectNameEn(fullUpdate.getProjectItem().getProject().getNameEn())
+                .projectNameEn(savedUpdate.getProjectItem().getProject().getNameEn())
+                .projectNameAr(savedUpdate.getProjectItem().getProject().getNameAr())
                 .build());
 
-        return dailyUpdateMapper.toResponse(fullUpdate,false);
+        return dailyUpdateMapper.toResponse(savedUpdate,false);
     }
 
     public Page<DailyUpdateResponse> getUpdatesForAdmin(

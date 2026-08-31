@@ -25,7 +25,7 @@ public class ProjectDashboardService {
     private final AuthenticatedUserService authenticatedUserService;
 
     public Page<ProjectSummaryResponse> getAllProjectsForAdmin(Pageable pageable) {
-        return projectRepository.findAll(pageable).map(projectMapper::toSummaryResponse);
+        return projectRepository.findAllWithItems(pageable).map(projectMapper::toSummaryResponse);
     }
 
     public ProjectResponse getProjectDetailsForAdmin(UUID projectId) {

@@ -13,7 +13,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "standard_items")
+@Table(name = "standard_items", indexes = {
+        @Index(name = "idx_std_item_sequence", columnList = "default_sequence"),
+        @Index(name = "idx_std_item_name_ar", columnList = "name_ar"),
+        @Index(name = "idx_std_item_name_en", columnList = "name_en")
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

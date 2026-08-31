@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,4 +38,9 @@ public interface FinancialRecordRepository extends JpaRepository<FinancialRecord
 
     @EntityGraph(attributePaths = {"project", "projectItem", "projectItem.standardItem"})
     Page<FinancialRecord> findByProject_ProjectIdAndRecordTypeOrderByCreatedAtDesc(UUID projectId, RecordType recordType, Pageable pageable);
+
+    @Query("SELECT r.recordType, COUNT(r), SUM(r.amount) FROM FinancialRecord r " +
+            "WHERE r.project.projectId = :projectId GROUP BY r.recordType")
+    List<Object[]> getFinancialSummaryByProject(@Param("projectId") UUID projectId);
+
 }

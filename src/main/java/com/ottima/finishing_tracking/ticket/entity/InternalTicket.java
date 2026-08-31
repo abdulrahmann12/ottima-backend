@@ -17,7 +17,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "internal_tickets")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -65,4 +66,17 @@ public class InternalTicket {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalTicket)) return false;
+        InternalTicket internalTicket = (InternalTicket) o;
+        return ticketId != null && ticketId.equals(internalTicket.getTicketId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

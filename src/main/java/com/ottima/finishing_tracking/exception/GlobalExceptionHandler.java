@@ -178,6 +178,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(AdminNotFoundException.class)
+    public ResponseEntity<BaseResponse> handleAdminNotFound(AdminNotFoundException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     // === Validation Exceptions === //
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -238,6 +243,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity< BaseResponse> handleAll(Exception ex, WebRequest request) {
         return buildErrorResponse("An unexpected error occurred. Please try again later.", request, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(org.springframework.dao.OptimisticLockingFailureException.class)
+    public ResponseEntity<BaseResponse> handleOptimisticLockingFailureException(org.springframework.dao.OptimisticLockingFailureException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new BaseResponse("Data has been modified by another user. Please refresh and try again.", null));
     }
 
 }

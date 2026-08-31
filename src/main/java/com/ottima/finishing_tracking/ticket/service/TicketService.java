@@ -106,11 +106,11 @@ public class TicketService {
 
         User currentUser = authenticatedUserService.getCurrentUser();
 
-        if (currentUser.getRole().getRoleName().contains("CLIENT")) {
+        if ("CLIENT".equals(currentUser.getRole().getRoleName())) {
             throw new UnauthorizedActionException(Messages.TICKET_CLIENT_SEND_DENIED);
         }
 
-        if (ticket.getReceiver().getRole().getRoleName().contains("CLIENT")) {
+        if ("CLIENT".equals(ticket.getReceiver().getRole().getRoleName())){
             throw new UnauthorizedActionException(Messages.TICKET_CLIENT_RECEIVE_DENIED);
         }
 
@@ -142,6 +142,15 @@ public class TicketService {
     public TicketResponse updateTicketStatus(UUID ticketId, UpdateTicketStatusRequest request) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
                 .orElseThrow(TicketNotFoundException::new);
+
+        User currentUser = authenticatedUserService.getCurrentUser();
+
+        boolean isAdmin = "ADMIN".equals(currentUser.getRole().getRoleName());
+        boolean isReceiver = ticket.getReceiver().getUserId().equals(currentUser.getUserId());
+
+        if (!isAdmin && !isReceiver) {
+            throw new UnauthorizedActionException(Messages.TICKET_STATUS_UPDATE_DENIED);
+        }
 
         ticket.setStatus(request.getStatus());
         InternalTicket updatedTicket = internalTicketRepository.save(ticket);

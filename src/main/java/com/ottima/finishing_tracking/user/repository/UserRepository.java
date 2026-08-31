@@ -78,4 +78,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 """)
     Optional<User> findForUpdateByIdentifier(@Param("value") String value);
 
-    long countByRole_RoleName(String roleName);}
+    long countByRole_RoleName(String roleName);
+
+    @Query("SELECT u FROM User u JOIN FETCH u.role WHERE u.role.roleName = :roleName AND u.active = true ORDER BY u.userId ASC")
+    Optional<User> findFirstActiveByRole_RoleName(@Param("roleName") String roleName);
+}

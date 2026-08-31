@@ -5,8 +5,11 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "update_images")
-@Data
+@Table(name = "update_images", indexes = {
+        @Index(name = "idx_upd_img_daily_update", columnList = "daily_update_id")
+})
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,4 +28,17 @@ public class UpdateImage {
 
     @Column(name = "is_approved")
     private Boolean approved;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UpdateImage)) return false;
+        UpdateImage updateImage = (UpdateImage) o;
+        return updateImageId != null && updateImageId.equals(updateImage.getUpdateImageId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

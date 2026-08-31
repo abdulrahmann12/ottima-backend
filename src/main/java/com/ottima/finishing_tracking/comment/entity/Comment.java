@@ -11,8 +11,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "comments")
-@Data
+@Table(name = "comments", indexes = {
+        @Index(name = "idx_comment_update_date", columnList = "daily_update_id, created_at DESC")
+})
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -47,4 +50,15 @@ public class Comment {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Comment)) return false;
+        Comment comment = (Comment) o;
+        return id != null && id.equals(comment.id);
+    }
+    @Override
+    public int hashCode() { return getClass().hashCode(); }
+
 }

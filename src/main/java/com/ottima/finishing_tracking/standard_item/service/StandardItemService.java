@@ -81,6 +81,17 @@ public class StandardItemService {
         standardItemRepository.delete(item);
     }
 
+    public Page<StandardItemResponse> getAll(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String processedKeyword = (keyword != null && !keyword.trim().isEmpty())
+                ? keyword.trim()
+                : null;
+
+        return standardItemRepository.searchItems(processedKeyword, pageable)
+                .map(standardItemMapper::toResponse);
+    }
+
     private StandardItem getEntityById(UUID itemId) {
         return standardItemRepository.findById(itemId)
                 .orElseThrow(StandardItemNotFoundException::new);

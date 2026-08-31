@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -105,12 +106,29 @@ public class FinancialService {
             throw new ProjectNotFoundException();
         }
 
-        BigDecimal totalPaid = financialRecordRepository.sumAmountByProjectIdAndRecordType(projectId, RecordType.DEPOSIT);
-        BigDecimal totalSpent = financialRecordRepository.sumAmountByProjectIdAndRecordType(projectId, RecordType.EXPENSE);
+        BigDecimal totalPaid = BigDecimal.ZERO;
+        BigDecimal totalSpent = BigDecimal.ZERO;
+        long totalPaidCount = 0L;
+        long totalSpentCount = 0L;
 
-        long totalPaidCount = financialRecordRepository.countByProject_ProjectIdAndRecordType(projectId, RecordType.DEPOSIT);
-        long totalSpentCount = financialRecordRepository.countByProject_ProjectIdAndRecordType(projectId, RecordType.EXPENSE);
+        List<Object[]> summaryResults = financialRecordRepository.getFinancialSummaryByProject(projectId);
 
+        for (Object[] result : summaryResults) {
+            RecordType type = (RecordType) result[0];
+
+            long count = result[1] != null ? ((Number) result[1]).longValue() : 0L;
+            BigDecimal sum = result[2] != null ? (BigDecimal) result[2] : BigDecimal.ZERO;
+
+            if (type == RecordType.DEPOSIT) {
+                totalPaidCount = count;
+                totalPaid = sum;
+            } else if (type == RecordType.EXPENSE) {
+                totalSpentCount = count;
+                totalSpent = sum;
+            }
+        }
+
+        // 4. حساب المتبقي
         BigDecimal remainingBalance = totalPaid.subtract(totalSpent);
 
         return FinancialSummaryResponse.builder()

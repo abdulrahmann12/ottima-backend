@@ -3,10 +3,7 @@ package com.ottima.finishing_tracking.project.entity;
 import com.ottima.finishing_tracking.project.enums.ProjectStatus;
 import com.ottima.finishing_tracking.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,8 +16,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "projects")
-@Data
+@Table(name = "projects", indexes = {
+        @Index(name = "idx_project_client_active", columnList = "client_id, deletes_at"),
+        @Index(name = "idx_project_engineer_active", columnList = "engineer_id, deletes_at")
+})@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -78,4 +78,17 @@ public class Project {
 
     @Column(name = "deletes_at")
     private Instant deletesAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Project)) return false;
+        Project project = (Project) o;
+        return projectId != null && projectId.equals(project.getProjectId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

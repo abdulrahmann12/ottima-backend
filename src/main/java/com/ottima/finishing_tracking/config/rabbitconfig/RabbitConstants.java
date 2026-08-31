@@ -23,4 +23,15 @@ public class RabbitConstants {
     public static final String PASSWORD_RESET_KEY = "auth.password.reset";
     public static final String CODE_REGENERATED_KEY = "auth.code.regenerated";
 
+
+    // Logging Exchange
+    public static final String LOGGING_EXCHANGE = "logging.exchange";
+    public static final String LOGGING_DLX_EXCHANGE = "logging.dlx.exchange";
+
+    // Logging Queues
+    public static final String ACTIVITY_LOG_QUEUE = "logging.activity.log.queue";
+    public static final String ACTIVITY_LOG_DLQ = "logging.activity.log.queue.dlq";
+
+    // Logging Routing Keys
+    public static final String ACTIVITY_LOG_KEY = "logging.activity.log";
 }

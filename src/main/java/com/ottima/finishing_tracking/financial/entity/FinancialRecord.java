@@ -15,8 +15,12 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "financial_records")
-@Data
+@Table(name = "financial_records", indexes = {
+        @Index(name = "idx_fin_proj_type", columnList = "project_id, record_type"),
+        @Index(name = "idx_fin_proj_date", columnList = "project_id, transaction_date DESC")
+})
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -60,4 +64,14 @@ public class FinancialRecord {
 
     @Column(name = "transaction_date", nullable = false)
     private LocalDate transactionDate;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FinancialRecord)) return false;
+        FinancialRecord financialRecord = (FinancialRecord) o;
+        return financialRecordId != null && financialRecordId.equals(financialRecord.financialRecordId);
+    }
+    @Override
+    public int hashCode() { return getClass().hashCode(); }
 }

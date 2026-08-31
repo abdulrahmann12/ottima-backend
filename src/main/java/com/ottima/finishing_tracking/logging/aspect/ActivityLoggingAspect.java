@@ -2,11 +2,11 @@ package com.ottima.finishing_tracking.logging.aspect;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ottima.finishing_tracking.config.rabbitconfig.RabbitConstants;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.logging.annotation.LogActivity;
 import com.ottima.finishing_tracking.logging.entity.UserActivityLog;
 import com.ottima.finishing_tracking.logging.enums.ActivityStatus;
-import com.ottima.finishing_tracking.logging.service.ActivityLogAsyncService;
 import com.ottima.finishing_tracking.logging.util.ClientInfoUtils;
 import com.ottima.finishing_tracking.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,10 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.CodeSignature;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +29,9 @@ import java.util.Map;
 @Slf4j
 public class ActivityLoggingAspect {
 
-    private final ActivityLogAsyncService logAsyncService;
     private final AuthenticatedUserService authenticatedUserService;
     private final ObjectMapper objectMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Around("@annotation(logActivity)")
     public Object logAroundMethod(ProceedingJoinPoint joinPoint, LogActivity logActivity) throws Throwable {
@@ -39,26 +42,16 @@ public class ActivityLoggingAspect {
         try {
             currentUser = authenticatedUserService.getCurrentUser();
         } catch (Exception e) {
+            // Ignore for unauthenticated endpoints
         }
 
         Map<String, Object> inputData = extractArguments(joinPoint);
 
-        Object result = null;
-        ActivityStatus status = ActivityStatus.SUCCESS;
-        String errorDetails = null;
-
         try {
-            result = joinPoint.proceed();
-            return result;
+            Object result = joinPoint.proceed();
 
-        } catch (Exception e) {
-            status = ActivityStatus.FAILED;
-            errorDetails = e.getMessage();
-            throw e;
-
-        } finally {
             Map<String, Object> outputData = null;
-            if (result != null && status == ActivityStatus.SUCCESS) {
+            if (result != null) {
                 try {
                     outputData = objectMapper.convertValue(result, new TypeReference<Map<String, Object>>() {});
                 } catch (Exception ex) {
@@ -66,20 +59,51 @@ public class ActivityLoggingAspect {
                 }
             }
 
-            UserActivityLog activityLog = UserActivityLog.builder()
+            UserActivityLog successLog = UserActivityLog.builder()
                     .userId(currentUser != null ? currentUser.getUserId() : null)
                     .username(currentUser != null ? currentUser.getUsername() : "System")
                     .action(logActivity.actionType())
-                    .status(status)
+                    .status(ActivityStatus.SUCCESS)
                     .entityName(logActivity.entityName())
                     .oldValues(inputData)
                     .newValues(outputData)
                     .ipAddress(ipAddress)
                     .userAgent(userAgent)
-                    .details(errorDetails != null ? errorDetails : logActivity.details())
+                    .details(logActivity.details())
                     .build();
 
-            logAsyncService.saveLog(activityLog);
+
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        rabbitTemplate.convertAndSend(RabbitConstants.LOGGING_EXCHANGE, RabbitConstants.ACTIVITY_LOG_KEY, successLog);
+                    }
+                });
+            } else {
+
+                rabbitTemplate.convertAndSend(RabbitConstants.LOGGING_EXCHANGE, RabbitConstants.ACTIVITY_LOG_KEY, successLog);
+            }
+
+            return result;
+
+        } catch (Throwable e) {
+
+            UserActivityLog failedLog = UserActivityLog.builder()
+                    .userId(currentUser != null ? currentUser.getUserId() : null)
+                    .username(currentUser != null ? currentUser.getUsername() : "System")
+                    .action(logActivity.actionType())
+                    .status(ActivityStatus.FAILED)
+                    .entityName(logActivity.entityName())
+                    .oldValues(inputData)
+                    .ipAddress(ipAddress)
+                    .userAgent(userAgent)
+                    .details(e.getMessage())
+                    .build();
+
+            rabbitTemplate.convertAndSend(RabbitConstants.LOGGING_EXCHANGE, RabbitConstants.ACTIVITY_LOG_KEY, failedLog);
+
+            throw e;
         }
     }
 

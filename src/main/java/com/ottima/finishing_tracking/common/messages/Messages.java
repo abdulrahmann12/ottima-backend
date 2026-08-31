@@ -81,6 +81,7 @@ public class Messages {
     public static final String REQUEST_NOT_SUPPORTED = "HTTP method not supported for this endpoint";
 
     //========================= Admin =============================
+    public static final String ADMIN_NOT_FOUND = "No active admin found in the system";
     public static final String ADMIN_CREATED = "Admin created successfully";
     public static final String DASHBOARD_SUMMARY_FETCHED = "Dashboard summary fetched successfully";
     public static final String ADMIN_FETCHED = "Admin fetched successfully";
@@ -169,6 +170,7 @@ public class Messages {
     public static final String TICKET_UPDATE_DENIED = "You can only update tickets you sent";
     public static final String TICKET_DELETE_DENIED = "You can only delete tickets you sent";
     public static final String TICKET_ALREADY_PROCESSED = "Cannot modify a ticket that has already been viewed or processed";
+    public static final String TICKET_STATUS_UPDATE_DENIED = "You are not authorized to update this ticket's status";
 
     //========================= Activity Logs =====================
     public static final String USER_CREATED_LOG = "Admin created a new user account";

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class NotificationEventListener {
     private final NotificationService notificationService;
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleTicketCreated(TicketCreatedEvent event) {
         String roleEn = event.getSenderRole().contains("ADMIN") ? "Admin" : "Engineer";
         String title = "New Internal Ticket";
@@ -29,7 +31,7 @@ public class NotificationEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleTicketStatusChanged(TicketStatusChangedEvent event) {
         String title = "Ticket Status Updated";
         String message = String.format("Your ticket (%s) status has been changed to: %s", event.getTicketTitle(), event.getNewStatus());
@@ -40,7 +42,7 @@ public class NotificationEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentEvent(CommentEvent event) {
         String title = event.isReply() ? "New Reply to Your Comment" : "New Comment";
         String action = event.isReply() ? "replied to your comment" : "added a new comment";
@@ -52,7 +54,7 @@ public class NotificationEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDailyUpdateStatusChanged(DailyUpdateStatusChangedEvent event) {
         String title = "Daily Update Status Changed";
         String statusAction = event.getNewStatus().equalsIgnoreCase("APPROVED") ? "approved" : "rejected";
@@ -65,7 +67,7 @@ public class NotificationEventListener {
     }
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleDailyUpdateSubmitted(DailyUpdateSubmittedEvent event) {
         String title = "New Daily Update Submitted";
         String message = String.format("Engineer %s submitted a new daily update for project: %s",

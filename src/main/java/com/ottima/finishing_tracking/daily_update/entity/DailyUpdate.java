@@ -12,8 +12,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "daily_updates")
-@Data
+@Table(name = "daily_updates", indexes = {
+        @Index(name = "idx_daily_upd_item_status", columnList = "project_item_id, status"),
+        @Index(name = "idx_daily_upd_eng_status", columnList = "engineer_id, status")
+})
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -51,4 +55,14 @@ public class DailyUpdate {
 
     @CreationTimestamp
     private Instant createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DailyUpdate)) return false;
+        DailyUpdate dailyUpdate = (DailyUpdate) o;
+        return dailyUpdateId != null && dailyUpdateId.equals(dailyUpdate.dailyUpdateId);
+    }
+    @Override
+    public int hashCode() { return getClass().hashCode(); }
 }

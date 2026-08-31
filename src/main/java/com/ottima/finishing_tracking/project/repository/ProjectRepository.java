@@ -16,6 +16,10 @@ import java.util.UUID;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
+    @Query(value = "SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectItems WHERE p.deletesAt IS NULL",
+            countQuery = "SELECT COUNT(p) FROM Project p WHERE p.deletesAt IS NULL")
+    Page<Project> findAllWithItems(Pageable pageable);
+
     @EntityGraph(attributePaths = {"client", "engineer"})
     Page<Project> findAllByClient_UserId(Long clientId, Pageable pageable);
 

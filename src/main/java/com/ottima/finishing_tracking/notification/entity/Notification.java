@@ -1,6 +1,7 @@
 package com.ottima.finishing_tracking.notification.entity;
 
 import com.ottima.finishing_tracking.notification.enums.ReferenceType;
+import com.ottima.finishing_tracking.project.entity.ProjectItem;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,8 +10,12 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "notifications")
-@Data
+@Table(name = "notifications", indexes = {
+        @Index(name = "idx_notif_user_created", columnList = "user_id, created_at DESC"),
+        @Index(name = "idx_notif_user_unread", columnList = "user_id, is_read")
+})
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -43,4 +48,17 @@ public class Notification {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Notification)) return false;
+        Notification notification = (Notification) o;
+        return notificationId != null && notificationId.equals(notification.getNotificationId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -39,6 +39,7 @@ public interface ProjectItemMapper {
     @Mapping(target = "standardItem", ignore = true)
     @Mapping(target = "status", ignore = true) // Default PENDING
     @Mapping(target = "completionPercentage", ignore = true) // Default 0
+    @Mapping(target = "version", ignore = true)
     ProjectItem toEntity(AddProjectItemRequest request);
 
     @Mapping(target = "projectItemId", ignore = true)

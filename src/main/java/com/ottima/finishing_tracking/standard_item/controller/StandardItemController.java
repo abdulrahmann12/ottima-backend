@@ -56,10 +56,11 @@ public class StandardItemController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<BaseResponse> getAll(
+            @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(
-                new BaseResponse(Messages.STANDARD_ITEMS_FETCHED, standardItemService.getAll(page, size))
+                new BaseResponse(Messages.STANDARD_ITEMS_FETCHED, standardItemService.getAll(search,page, size))
         );
     }
 
