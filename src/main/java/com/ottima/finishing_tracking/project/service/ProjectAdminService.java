@@ -24,14 +24,14 @@ import com.ottima.finishing_tracking.common.messages.Constants;
 import com.ottima.finishing_tracking.logging.annotation.LogActivity;
 import com.ottima.finishing_tracking.logging.enums.ActionType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +50,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_CREATED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "dashboardSummary"}, allEntries = true)
     public ProjectResponse createProject(CreateProjectRequest request) {
         User client = validateAndGetUserByRole(request.getClientId(), "CLIENT", Messages.USER_NOT_CLIENT,Messages.CLIENT_NOT_FOUND);
         User engineer = validateAndGetUserByRole(request.getEngineerId(), "ENGINEER", Messages.USER_NOT_ENGINEER,Messages.ENGINEER_NOT_FOUND);
@@ -64,6 +65,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails", "dashboardSummary"}, allEntries = true)
     public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest request) {
         Project project = getProjectById(projectId);
 
@@ -80,6 +82,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEMS_ASSIGNED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails"}, allEntries = true)
     public List<ProjectItemResponse> assignProjectItems(UUID projectId, AssignProjectItemsRequest request) {
         Project project = getProjectById(projectId);
 
@@ -93,11 +96,23 @@ public class ProjectAdminService {
 
         List<ProjectItem> itemsToSave = new ArrayList<>();
 
-        for (AddProjectItemRequest itemRequest : request.getItems()) {
-            StandardItem standardItem = standardItemRepository.findById(itemRequest.getStandardItemId())
-                    .orElseThrow(StandardItemNotFoundException::new);
 
-            if (projectItemRepository.existsByProject_ProjectIdAndStandardItem_ItemId(projectId, standardItem.getItemId())) {
+        List<UUID> requestedStandardItemIds = request.getItems().stream()
+                .map(AddProjectItemRequest::getStandardItemId)
+                .toList();
+
+        Map<UUID, StandardItem> standardItemMap = standardItemRepository.findAllById(requestedStandardItemIds)
+                .stream()
+                .collect(Collectors.toMap(StandardItem::getItemId, item -> item));
+
+        Set<UUID> existingStandardItemIds = projectItemRepository.findStandardItemIdsByProject(projectId);
+
+
+        for (AddProjectItemRequest itemRequest : request.getItems()) {
+            StandardItem standardItem = standardItemMap.get(itemRequest.getStandardItemId());
+            if (standardItem == null) throw new StandardItemNotFoundException();
+
+            if (existingStandardItemIds.contains(standardItem.getItemId())) {
                 throw new ProjectItemAlreadyExistsException();
             }
 
@@ -120,6 +135,7 @@ public class ProjectAdminService {
                 .map(projectItemMapper::toResponse)
                 .toList();
     }
+
     private User validateAndGetUserByRole(Long userId, String expectedRole, String errorMessage, String userTypeNotFoundMessage) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userTypeNotFoundMessage));
@@ -141,7 +157,7 @@ public class ProjectAdminService {
 
         if (excludedItemId != null) {
             ProjectItem existingItem = projectItemRepository.findById(excludedItemId)
-                    .orElseThrow(() -> new RuntimeException("Item not found"));
+                    .orElseThrow(ProjectItemNotFoundException::new);
             currentTotalWeight = currentTotalWeight.subtract(existingItem.getWeightPercentage());
         }
 
@@ -154,6 +170,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_DELETED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails", "dashboardSummary"}, allEntries = true)
     public void deleteProject(UUID projectId) {
         Project project = getProjectById(projectId);
         project.setDeletesAt(Instant.now());
@@ -162,6 +179,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_CONFIG_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails"}, allEntries = true)
     public ProjectItemResponse updateProjectItemConfig(UUID projectId, UUID itemId, UpdateProjectItemConfigRequest request) {
         ProjectItem item = projectItemRepository.findByProjectItemIdAndProject_ProjectId(itemId, projectId)
                 .orElseThrow(ProjectItemNotFoundException::new);
@@ -176,6 +194,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_REMOVED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails"}, allEntries = true)
     public void removeProjectItem(UUID projectId, UUID itemId) {
         ProjectItem item = projectItemRepository.findByProjectItemIdAndProject_ProjectId(itemId, projectId)
                 .orElseThrow(ProjectItemNotFoundException::new);
@@ -184,6 +203,7 @@ public class ProjectAdminService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_STATUS_CHANGED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails", "dashboardSummary"}, allEntries = true)
     public void changeProjectStatus(UUID projectId, ProjectStatus newStatus) {
         Project project = getProjectById(projectId);
         project.setOverallStatus(newStatus);

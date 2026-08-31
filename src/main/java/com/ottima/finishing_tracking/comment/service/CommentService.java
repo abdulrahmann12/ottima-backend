@@ -20,6 +20,8 @@ import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,7 @@ public class CommentService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_ADDED_LOG)
     @Transactional
+    @CacheEvict(value = "updateComments", allEntries = true)
     public CommentResponse addComment(UUID dailyUpdateId, @Valid AddCommentRequest request) {
         DailyUpdate dailyUpdate = dailyUpdateRepository.findById(dailyUpdateId)
                 .orElseThrow(DailyUpdateNotFoundException::new);
@@ -83,6 +86,7 @@ public class CommentService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_REPLIED_LOG)
     @Transactional
+    @CacheEvict(value = "updateComments", allEntries = true)
     public CommentResponse replyToComment(UUID commentId, ReplyCommentRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
@@ -107,6 +111,7 @@ public class CommentService {
         return commentMapper.toResponse(commentRepository.save(comment));
     }
 
+    @Cacheable(value = "updateComments", key = "#dailyUpdateId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<CommentResponse> getCommentsForUpdate(UUID dailyUpdateId, Pageable pageable) {
         return commentRepository.findByDailyUpdate_DailyUpdateIdOrderByCreatedAtDesc(dailyUpdateId, pageable)
                 .map(commentMapper::toResponse);
@@ -114,6 +119,7 @@ public class CommentService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = "updateComments", allEntries = true)
     public CommentResponse editComment(UUID commentId, @Valid EditCommentRequest request) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
@@ -136,6 +142,7 @@ public class CommentService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.COMMENT_ENTITY, details = Messages.COMMENT_DELETED_LOG)
     @Transactional
+    @CacheEvict(value = "updateComments", allEntries = true)
     public void deleteComment(UUID commentId, boolean isAdmin) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);

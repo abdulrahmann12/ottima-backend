@@ -11,6 +11,7 @@ import com.ottima.finishing_tracking.project.entity.ProjectItem;
 import com.ottima.finishing_tracking.project.mapper.ProjectItemMapper;
 import com.ottima.finishing_tracking.project.repository.ProjectItemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class ProjectTrackingService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_PROGRESS_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails", "dashboardSummary"}, allEntries = true)
     public ProjectItemResponse updateItemProgress(UUID projectId, UUID itemId, UpdateItemProgressRequest request) {
 
         ProjectItem item = projectItemRepository.findByProjectItemIdAndProject_ProjectId(itemId, projectId)

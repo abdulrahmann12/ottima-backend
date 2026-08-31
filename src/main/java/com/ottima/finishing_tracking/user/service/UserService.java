@@ -16,7 +16,7 @@ import com.ottima.finishing_tracking.user.dto.response.UserSummaryResponse;
 import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.mapper.UserMapper;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;

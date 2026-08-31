@@ -16,7 +16,7 @@ import com.ottima.finishing_tracking.jwt.service.JwtService;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

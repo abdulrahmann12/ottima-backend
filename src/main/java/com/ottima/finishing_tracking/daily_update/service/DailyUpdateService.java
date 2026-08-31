@@ -24,6 +24,8 @@ import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import com.ottima.finishing_tracking.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +50,7 @@ public class DailyUpdateService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.DAILY_UPDATE_ENTITY, details = Messages.DAILY_UPDATE_CREATED_LOG)
     @Transactional
+    @CacheEvict(value = "projectUpdates", allEntries = true)
     public DailyUpdateResponse createDailyUpdate(UUID projectId, @Valid CreateDailyUpdateRequest request) {
         ProjectItem projectItem = projectItemRepository.findByProjectItemIdAndProject_ProjectId(request.getProjectItemId(), projectId)
                 .orElseThrow(ProjectItemNotFoundException::new);
@@ -77,6 +80,7 @@ public class DailyUpdateService {
         return dailyUpdateMapper.toResponse(savedUpdate,false);
     }
 
+    @Cacheable(value = "projectUpdates", key = "'admin-' + #projectId + '-' + #projectItemId + '-' + #engineerId + '-' + #status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<DailyUpdateResponse> getUpdatesForAdmin(
             UUID projectId,
             UUID projectItemId,
@@ -89,6 +93,7 @@ public class DailyUpdateService {
         ).map(update -> dailyUpdateMapper.toResponse(update, false));
     }
 
+    @Cacheable(value = "projectUpdates", key = "'engineer-' + #root.target.getCurrentUserId() + '-' + #projectId + '-' + #projectItemId + '-' + #status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<DailyUpdateResponse> getMyUpdatesAsEngineer(
             UUID projectId,
             UUID projectItemId,
@@ -102,10 +107,11 @@ public class DailyUpdateService {
         ).map(update -> dailyUpdateMapper.toResponse(update, false));
     }
 
+    @Cacheable(value = "projectUpdates", key = "'client-' + #root.target.getCurrentUserId() + '-' + #projectItemId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<DailyUpdateResponse> getUpdatesForClient(UUID projectItemId, Pageable pageable) {
         Long currentClientId = authenticatedUserService.getCurrentUser().getUserId();
 
-        ProjectItem projectItem = projectItemRepository.findById(projectItemId)
+        ProjectItem projectItem = projectItemRepository.findByIdWithProjectAndClient(projectItemId)
                 .orElseThrow(ProjectItemNotFoundException::new);
 
         if (!projectItem.getProject().getClient().getUserId().equals(currentClientId)) {
@@ -119,6 +125,7 @@ public class DailyUpdateService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.DAILY_UPDATE_ENTITY, details = Messages.DAILY_UPDATE_EVALUATED_LOG)
     @Transactional
+    @CacheEvict(value = "projectUpdates", allEntries = true)
     public DailyUpdateResponse evaluateDailyUpdate(UUID dailyUpdateId, @Valid EvaluateDailyUpdateRequest request) {
 
         DailyUpdate dailyUpdate = dailyUpdateRepository.findById(dailyUpdateId)
@@ -150,5 +157,9 @@ public class DailyUpdateService {
                 .build());
 
         return dailyUpdateMapper.toResponse(savedUpdate,false);
+    }
+
+    public Long getCurrentUserId() {
+        return authenticatedUserService.getCurrentUser().getUserId();
     }
 }

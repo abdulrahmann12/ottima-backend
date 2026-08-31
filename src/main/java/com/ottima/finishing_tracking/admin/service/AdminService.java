@@ -12,9 +12,11 @@ import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.mapper.UserMapper;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
 import com.ottima.finishing_tracking.user.service.UserService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -30,15 +32,18 @@ public class AdminService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.ADMIN_ENTITY, details = Messages.ADMIN_CREATED_LOG)
     @Transactional
+    @CacheEvict(value = {"dashboardSummary", "adminsList"}, allEntries = true)
     public UserResponse createAdmin(@Valid CreateUserRequest request) {
         User savedAdmin = userService.createBaseUser(request, "ADMIN");
         return userMapper.toResponse(savedAdmin);
     }
 
+    @Cacheable(value = "adminsList", key = "#page + '-' + #size")
     public Page<UserSummaryResponse> getAllAdmins(int page, int size) {
         return userService.getUsersByRole("ADMIN", page, size);
     }
 
+    @Cacheable(value = "dashboardSummary")
     public DashboardSummaryResponse getDashboardSummary() {
 
         long totalActiveUsers = userRepository.countByActiveTrue();

@@ -88,7 +88,7 @@ public class ActivityLoggingAspect {
             return result;
 
         } catch (Throwable e) {
-
+            // بناء كائن اللوج للفشل
             UserActivityLog failedLog = UserActivityLog.builder()
                     .userId(currentUser != null ? currentUser.getUserId() : null)
                     .username(currentUser != null ? currentUser.getUsername() : "System")
@@ -101,7 +101,11 @@ public class ActivityLoggingAspect {
                     .details(e.getMessage())
                     .build();
 
-            rabbitTemplate.convertAndSend(RabbitConstants.LOGGING_EXCHANGE, RabbitConstants.ACTIVITY_LOG_KEY, failedLog);
+            try {
+                rabbitTemplate.convertAndSend(RabbitConstants.LOGGING_EXCHANGE, RabbitConstants.ACTIVITY_LOG_KEY, failedLog);
+            } catch (Exception rabbitEx) {
+                log.error("Failed to publish failure log to RabbitMQ. Original error: {}", e.getMessage(), rabbitEx);
+            }
 
             throw e;
         }

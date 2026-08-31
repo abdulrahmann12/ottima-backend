@@ -10,21 +10,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
-    @Query(value = "SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectItems WHERE p.deletesAt IS NULL",
-            countQuery = "SELECT COUNT(p) FROM Project p WHERE p.deletesAt IS NULL")
-    Page<Project> findAllWithItems(Pageable pageable);
+    @Query(value = "SELECT p.projectId FROM Project p WHERE p.deletesAt IS NULL")
+    Page<UUID> findAllProjectIds(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"client", "engineer"})
-    Page<Project> findAllByClient_UserId(Long clientId, Pageable pageable);
+    @Query("SELECT DISTINCT p FROM Project p LEFT JOIN FETCH p.projectItems WHERE p.projectId IN :ids")
+    List<Project> findAllWithItemsByIds(@Param("ids") List<UUID> ids);
 
-    @EntityGraph(attributePaths = {"client", "engineer"})
-    Page<Project> findAllByEngineer_UserId(Long engineerId, Pageable pageable);
 
     boolean existsByProjectIdAndClient_UserId(UUID projectId, Long clientId);
 
@@ -37,4 +35,11 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     @EntityGraph(attributePaths = {"client", "engineer"})
     Page<Project> findAll(Pageable pageable);
+
+    // التعديل في الاستعلامين دول
+    @EntityGraph(attributePaths = {"client", "engineer", "projectItems"})
+    Page<Project> findAllByClient_UserId(Long clientId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"client", "engineer", "projectItems"})
+    Page<Project> findAllByEngineer_UserId(Long engineerId, Pageable pageable);
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -27,4 +28,10 @@ public interface ProjectItemRepository extends JpaRepository<ProjectItem, UUID> 
 
     @Query("SELECT COALESCE(MAX(pi.sequenceOrder), 0) FROM ProjectItem pi WHERE pi.project.projectId = :projectId")
     Integer findMaxSequenceOrderByProjectId(@Param("projectId") UUID projectId);
+
+    @Query("SELECT pi FROM ProjectItem pi JOIN FETCH pi.project p JOIN FETCH p.client WHERE pi.projectItemId = :id")
+    Optional<ProjectItem> findByIdWithProjectAndClient(@Param("id") UUID id);
+
+    @Query("SELECT pi.standardItem.itemId FROM ProjectItem pi WHERE pi.project.projectId = :projectId")
+    Set<UUID> findStandardItemIdsByProject(@Param("projectId") UUID projectId);
 }

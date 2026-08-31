@@ -23,6 +23,8 @@ import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +55,7 @@ public class TicketService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_CREATED_LOG)
     @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
     public TicketResponse createTicket(UUID projectId, @Valid CreateTicketRequest request) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(ProjectNotFoundException::new);
@@ -100,6 +103,7 @@ public class TicketService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
     public TicketResponse updateTicket(UUID ticketId, @Valid UpdateTicketRequest request) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
                 .orElseThrow(TicketNotFoundException::new);
@@ -139,6 +143,7 @@ public class TicketService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_STATUS_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
     public TicketResponse updateTicketStatus(UUID ticketId, UpdateTicketStatusRequest request) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
                 .orElseThrow(TicketNotFoundException::new);
@@ -167,6 +172,7 @@ public class TicketService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.TICKET_ENTITY, details = Messages.TICKET_DELETED_LOG)
     @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
     public void deleteTicket(UUID ticketId) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
                 .orElseThrow(TicketNotFoundException::new);
@@ -183,13 +189,14 @@ public class TicketService {
         internalTicketRepository.delete(ticket);
     }
 
-
+    @Cacheable(value = "tickets", key = "#ticketId")
     public TicketResponse getTicketById(UUID ticketId) {
         InternalTicket ticket = internalTicketRepository.findById(ticketId)
                 .orElseThrow(TicketNotFoundException::new);
         return ticketMapper.toResponse(ticket);
     }
 
+    @Cacheable(value = "tickets", key = "'project-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<TicketResponse> getTicketsByProject(UUID projectId, Pageable pageable) {
         if (!projectRepository.existsById(projectId)) {
             throw new ProjectNotFoundException();
@@ -198,18 +205,21 @@ public class TicketService {
                 .map(ticketMapper::toResponse);
     }
 
+    @Cacheable(value = "tickets", key = "'inbox-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<TicketResponse> getMyInbox(Pageable pageable) {
         User currentUser = authenticatedUserService.getCurrentUser();
         return internalTicketRepository.findByReceiver_UserIdOrderByCreatedAtDesc(currentUser.getUserId(), pageable)
                 .map(ticketMapper::toResponse);
     }
 
+    @Cacheable(value = "tickets", key = "'sent-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<TicketResponse> getMySentRequests(Pageable pageable) {
         User currentUser = authenticatedUserService.getCurrentUser();
         return internalTicketRepository.findBySender_UserIdOrderByCreatedAtDesc(currentUser.getUserId(), pageable)
                 .map(ticketMapper::toResponse);
     }
 
+    @Cacheable(value = "tickets", key = "'user-' + #userId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<TicketResponse> getAllTicketsForSpecificUser(Long userId, Pageable pageable) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException();
@@ -217,5 +227,9 @@ public class TicketService {
         return internalTicketRepository
                 .findBySender_UserIdOrReceiver_UserIdOrderByCreatedAtDesc(userId, userId, pageable)
                 .map(ticketMapper::toResponse);
+    }
+
+    public Long getCurrentUserId() {
+        return authenticatedUserService.getCurrentUser().getUserId();
     }
 }

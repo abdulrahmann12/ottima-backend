@@ -27,7 +27,25 @@ public class CacheConfig {
 
                 // ── SHORT TTL: high-frequency lookups that must stay fresh ──
                 buildCache("userDetails",     2, TimeUnit.MINUTES, 1_000),
-                buildCache("tokens",          2, TimeUnit.MINUTES, 5_000)
+                buildCache("tokens",          2, TimeUnit.MINUTES, 5_000),
+
+                buildCache("dashboardSummary", 5, TimeUnit.MINUTES, 10),
+                buildCache("adminsList",       10, TimeUnit.MINUTES, 100),
+
+                buildCache("clientsList", 10, TimeUnit.MINUTES, 100),
+                buildCache("updateComments", 5, TimeUnit.MINUTES, 500),
+
+                buildCache("engineersList",  10, TimeUnit.MINUTES, 100),
+                buildCache("projectUpdates", 5, TimeUnit.MINUTES, 500),
+
+                buildCache("financialSummary", 5, TimeUnit.MINUTES, 200),
+                buildCache("projectFinancials", 5, TimeUnit.MINUTES, 500),
+
+                buildCache("projectsList", 10, TimeUnit.MINUTES, 200),
+                buildCache("projectDetails", 5, TimeUnit.MINUTES, 200),
+
+                buildCache("standardItems", 15, TimeUnit.MINUTES, 200),
+                buildCache("tickets",       5, TimeUnit.MINUTES, 300)
         ));
         return manager;
     }

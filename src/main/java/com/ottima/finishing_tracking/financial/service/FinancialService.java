@@ -20,6 +20,8 @@ import com.ottima.finishing_tracking.project.repository.ProjectRepository;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ public class FinancialService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_CREATED_LOG)
     @Transactional
+    @CacheEvict(value = {"financialSummary", "projectFinancials"}, allEntries = true)
     public FinancialRecordResponse createFinancialRecord(UUID projectId, @Valid CreateFinancialRecordRequest request) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(ProjectNotFoundException::new);
@@ -64,6 +67,7 @@ public class FinancialService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = {"financialSummary", "projectFinancials"}, allEntries = true)
     public FinancialRecordResponse updateFinancialRecord(UUID financialRecordId, @Valid UpdateFinancialRecordRequest request) {
         FinancialRecord record = financialRecordRepository.findById(financialRecordId)
                 .orElseThrow(FinancialRecordNotFoundException::new);
@@ -94,6 +98,7 @@ public class FinancialService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_DELETED_LOG)
     @Transactional
+    @CacheEvict(value = {"financialSummary", "projectFinancials"}, allEntries = true)
     public void deleteFinancialRecord(UUID financialRecordId) {
         FinancialRecord record = financialRecordRepository.findById(financialRecordId)
                 .orElseThrow(FinancialRecordNotFoundException::new);
@@ -101,6 +106,7 @@ public class FinancialService {
         financialRecordRepository.delete(record);
     }
 
+    @Cacheable(value = "financialSummary", key = "#projectId")
     public FinancialSummaryResponse getProjectFinancialSummary(UUID projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new ProjectNotFoundException();
@@ -128,7 +134,6 @@ public class FinancialService {
             }
         }
 
-        // 4. حساب المتبقي
         BigDecimal remainingBalance = totalPaid.subtract(totalSpent);
 
         return FinancialSummaryResponse.builder()
@@ -140,11 +145,13 @@ public class FinancialService {
                 .build();
     }
 
+    @Cacheable(value = "projectFinancials", key = "'gallery-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<FinancialRecordResponse> getProjectInvoicesGallery(UUID projectId, Pageable pageable) {
         return financialRecordRepository.findByProject_ProjectIdAndDocumentUrlIsNotNullOrderByCreatedAtDesc(projectId, pageable)
                 .map(financialRecordMapper::toResponse);
     }
 
+    @Cacheable(value = "projectFinancials", key = "'all-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<FinancialRecordResponse> getAllRecordsByProject(UUID projectId, Pageable pageable) {
         return financialRecordRepository.findByProject_ProjectIdOrderByCreatedAtDesc(projectId, pageable)
                 .map(financialRecordMapper::toResponse);
@@ -161,6 +168,7 @@ public class FinancialService {
                 .map(financialRecordMapper::toResponse);
     }
 
+    @Cacheable(value = "projectFinancials", key = "'type-' + #projectId + '-' + #recordType + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<FinancialRecordResponse> getRecordsByProjectAndType(UUID projectId, RecordType recordType, Pageable pageable) {
         return financialRecordRepository.findByProject_ProjectIdAndRecordTypeOrderByCreatedAtDesc(projectId, recordType, pageable)
                 .map(financialRecordMapper::toResponse);

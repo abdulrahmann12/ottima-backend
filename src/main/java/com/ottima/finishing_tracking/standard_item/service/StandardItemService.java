@@ -15,6 +15,8 @@ import com.ottima.finishing_tracking.standard_item.mapper.StandardItemMapper;
 import com.ottima.finishing_tracking.standard_item.repository.StandardItemRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +38,7 @@ public class StandardItemService {
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.STANDARD_ITEM_ENTITY, details = Messages.STANDARD_ITEM_CREATED_LOG)
     @Transactional
+    @CacheEvict(value = "standardItems", allEntries = true)
     public StandardItemResponse create(@Valid StandardItemRequest request) {
         if (standardItemRepository.existsByNameArOrNameEn(request.getNameAr(), request.getNameEn())) {
             throw new StandardItemAlreadyExistsException();
@@ -48,6 +51,7 @@ public class StandardItemService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.STANDARD_ITEM_ENTITY, details = Messages.STANDARD_ITEM_UPDATED_LOG)
     @Transactional
+    @CacheEvict(value = "standardItems", allEntries = true)
     public StandardItemResponse update(UUID itemId, @Valid StandardItemRequest request) {
         StandardItem item = getEntityById(itemId);
 
@@ -60,6 +64,7 @@ public class StandardItemService {
         return standardItemMapper.toResponse(updatedItem);
     }
 
+    @Cacheable(value = "standardItems", key = "#itemId")
     public StandardItemResponse getById(UUID itemId) {
         return standardItemMapper.toResponse(getEntityById(itemId));
     }
@@ -72,6 +77,7 @@ public class StandardItemService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.STANDARD_ITEM_ENTITY, details = Messages.STANDARD_ITEM_DELETED_LOG)
     @Transactional
+    @CacheEvict(value = "standardItems", allEntries = true)
     public void delete(UUID itemId) {
         StandardItem item = getEntityById(itemId);
 
@@ -81,6 +87,7 @@ public class StandardItemService {
         standardItemRepository.delete(item);
     }
 
+    @Cacheable(value = "standardItems", key = "'search-' + (#keyword != null ? #keyword : 'none') + '-' + #page + '-' + #size")
     public Page<StandardItemResponse> getAll(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 

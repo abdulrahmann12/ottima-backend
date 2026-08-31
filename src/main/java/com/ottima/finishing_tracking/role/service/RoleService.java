@@ -75,6 +75,7 @@ public class RoleService {
     }
 
     @CacheEvict(value = "roles", allEntries = true)
+    @Transactional
     public void deleteRole(Long roleId){
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(RoleNotFoundException::new);
