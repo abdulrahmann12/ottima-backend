@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -81,5 +82,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByRole_RoleName(String roleName);
 
     @Query("SELECT u FROM User u JOIN FETCH u.role WHERE u.role.roleName = :roleName AND u.active = true ORDER BY u.userId ASC")
-    Optional<User> findFirstActiveByRole_RoleName(@Param("roleName") String roleName);
+    List<User> findFirstActiveByRole_RoleName(@Param("roleName") String roleName);
 }

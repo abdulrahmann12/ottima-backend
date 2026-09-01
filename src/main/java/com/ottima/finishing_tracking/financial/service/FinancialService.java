@@ -108,8 +108,18 @@ public class FinancialService {
 
     @Cacheable(value = "financialSummary", key = "#projectId")
     public FinancialSummaryResponse getProjectFinancialSummary(UUID projectId) {
-        if (!projectRepository.existsById(projectId)) {
-            throw new ProjectNotFoundException();
+        Long currentUserId = authenticatedUserService.getCurrentUser().getUserId();
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(ProjectNotFoundException::new);
+
+        String roleName = authenticatedUserService.getCurrentUser().getRole().getRoleName();
+
+        boolean isOwner = project.getClient().getUserId().equals(currentUserId);
+        boolean isAdmin = "ADMIN".equals(roleName);
+
+        if (!isOwner && !isAdmin) {
+            throw new ProjectAccessDeniedException();
         }
 
         BigDecimal totalPaid = BigDecimal.ZERO;
@@ -120,7 +130,14 @@ public class FinancialService {
         List<Object[]> summaryResults = financialRecordRepository.getFinancialSummaryByProject(projectId);
 
         for (Object[] result : summaryResults) {
-            RecordType type = (RecordType) result[0];
+            if (result[0] == null) continue;
+
+            RecordType type;
+            if (result[0] instanceof RecordType) {
+                type = (RecordType) result[0];
+            } else {
+                type = RecordType.valueOf(result[0].toString());
+            }
 
             long count = result[1] != null ? ((Number) result[1]).longValue() : 0L;
             BigDecimal sum = result[2] != null ? (BigDecimal) result[2] : BigDecimal.ZERO;
@@ -147,6 +164,20 @@ public class FinancialService {
 
     @Cacheable(value = "projectFinancials", key = "'gallery-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<FinancialRecordResponse> getProjectInvoicesGallery(UUID projectId, Pageable pageable) {
+        Long currentUserId = authenticatedUserService.getCurrentUser().getUserId();
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(ProjectNotFoundException::new);
+
+        String roleName = authenticatedUserService.getCurrentUser().getRole().getRoleName();
+
+        boolean isOwner = project.getClient().getUserId().equals(currentUserId);
+        boolean isAdmin = "ADMIN".equals(roleName);
+
+        if (!isOwner && !isAdmin) {
+            throw new ProjectAccessDeniedException();
+        }
+
         return financialRecordRepository.findByProject_ProjectIdAndDocumentUrlIsNotNullOrderByCreatedAtDesc(projectId, pageable)
                 .map(financialRecordMapper::toResponse);
     }

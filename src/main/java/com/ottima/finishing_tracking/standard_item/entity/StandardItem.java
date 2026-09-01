@@ -35,7 +35,10 @@ public class StandardItem {
     private String nameEn;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String descriptionAr;
+
+    @Column(columnDefinition = "TEXT")
+    private String descriptionEn;
 
     @Column(name = "default_sequence")
     private Integer defaultSequence;

@@ -73,7 +73,7 @@ public interface ProjectMapper {
     @Mapping(target = "projectId", ignore = true)
     @Mapping(target = "client", ignore = true)
     @Mapping(target = "engineer", ignore = true)
-    @Mapping(target = "overallStatus", constant = "PENDING")
+    @Mapping(target = "overallStatus", ignore = true)
     @Mapping(target = "projectItems", ignore = true)
     Project toEntity(CreateProjectRequest request);
 

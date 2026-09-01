@@ -16,7 +16,8 @@ public class StandardItemResponse {
     private UUID itemId;
     private String nameAr;
     private String nameEn;
-    private String description;
+    private String descriptionAr;
+    private String descriptionEn;
     private Integer defaultSequence;
     private Instant createdAt;
     private Instant updatedAt;

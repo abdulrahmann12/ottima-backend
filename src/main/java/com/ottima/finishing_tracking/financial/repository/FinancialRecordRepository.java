@@ -39,8 +39,7 @@ public interface FinancialRecordRepository extends JpaRepository<FinancialRecord
     @EntityGraph(attributePaths = {"project", "projectItem", "projectItem.standardItem"})
     Page<FinancialRecord> findByProject_ProjectIdAndRecordTypeOrderByCreatedAtDesc(UUID projectId, RecordType recordType, Pageable pageable);
 
-    @Query("SELECT r.recordType, COUNT(r), SUM(r.amount) FROM FinancialRecord r " +
-            "WHERE r.project.projectId = :projectId GROUP BY r.recordType")
+    @Query("SELECT r.recordType, COUNT(r), SUM(r.amount) FROM FinancialRecord r WHERE r.project.projectId = :projectId GROUP BY r.recordType")
     List<Object[]> getFinancialSummaryByProject(@Param("projectId") UUID projectId);
 
 }

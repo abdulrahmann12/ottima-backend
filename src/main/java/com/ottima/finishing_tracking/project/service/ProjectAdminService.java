@@ -57,6 +57,7 @@ public class ProjectAdminService {
 
         Project project = projectMapper.toEntity(request);
         project.setClient(client);
+        project.setOverallStatus(ProjectStatus.DELIVERED);
         project.setEngineer(engineer);
 
         Project savedProject = projectRepository.save(project);

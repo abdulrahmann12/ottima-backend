@@ -17,7 +17,9 @@ public class StandardItemRequest {
     @NotBlank(message = ValidationMessages.ITEM_NAME_EN_REQUIRED)
     private String nameEn;
 
-    private String description;
+    private String descriptionAr;
+
+    private String descriptionEn;
 
     private Integer defaultSequence;
 }

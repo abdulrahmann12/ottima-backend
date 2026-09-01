@@ -16,6 +16,7 @@ public interface FinancialRecordMapper {
     FinancialRecord toEntity(CreateFinancialRecordRequest request);
 
     @Mapping(target = "projectItemId", source = "projectItem.projectItemId")
+    @Mapping(target = "projectId", source = "projectItem.project.projectId")
     @Mapping(target = "itemNameAr", source = "projectItem.standardItem.nameAr")
     @Mapping(target = "itemNameEn", source = "projectItem.standardItem.nameEn")
     FinancialRecordResponse toResponse(FinancialRecord entity);

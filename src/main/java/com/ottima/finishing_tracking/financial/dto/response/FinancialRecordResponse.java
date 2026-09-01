@@ -21,6 +21,9 @@ public class FinancialRecordResponse {
     @Schema(description = "ID of the linked project item (null if project-level)", example = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d")
     private UUID projectItemId;
 
+    @Schema(description = "ID of the linked project (null if project-level)", example = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d")
+    private UUID projectId;
+
     @Schema(description = "Arabic name of the linked project item", example = "دهانات الحوائط")
     private String itemNameAr;
 
