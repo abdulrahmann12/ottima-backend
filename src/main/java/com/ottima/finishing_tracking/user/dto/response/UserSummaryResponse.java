@@ -18,4 +18,5 @@ public class UserSummaryResponse {
     private String fullNameAr;
     private String fullNameEn;
     private String phoneNumber;
+    private boolean active;
 }

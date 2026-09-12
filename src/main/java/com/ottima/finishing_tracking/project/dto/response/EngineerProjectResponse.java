@@ -30,6 +30,7 @@ public class EngineerProjectResponse {
         private String itemNameAr;
         private String itemNameEn;
         private ProjectItemStatus status;
+        private BigDecimal weightPercentage;
         private BigDecimal completionPercentage;
         private Integer sequenceOrder;
         private String generalNotes;

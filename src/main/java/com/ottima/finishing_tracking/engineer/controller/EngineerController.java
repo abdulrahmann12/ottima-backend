@@ -31,7 +31,7 @@ public class EngineerController {
     }
 
     @Operation(summary = SwaggerMessages.GET_ALL_ENGINEERS, description = SwaggerMessages.GET_ALL_ENGINEERS_DESC)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     @GetMapping
     public ResponseEntity<BaseResponse> getAllEngineers(
             @RequestParam(defaultValue = "0") int page,

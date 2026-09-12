@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Daily Update Submitted - OTTIMA</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F8F6F2;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #2D251E;
+            -webkit-font-smoothing: antialiased;
+        }
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #F8F6F2;
+            padding: 40px 0;
+        }
+        .main-card {
+            max-width: 580px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #EADBCE;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(140, 109, 83, 0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #8C6D53 0%, #6E5038 100%);
+            padding: 32px 24px;
+            text-align: center;
+            border-bottom: 3px solid #D4A373;
+        }
+        .brand-title {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .brand-subtitle {
+            color: #F3ECE4;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        .content {
+            padding: 36px 32px;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #FAF4EE;
+            color: #8C6D53;
+            border: 1px solid #D8C7B8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2D251E;
+            margin-bottom: 12px;
+        }
+        .text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #554D46;
+            margin: 0 0 20px 0;
+        }
+        .info-card {
+            background-color: #FAF7F4;
+            border: 1px solid #EADBCE;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2D251E;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #EADBCE;
+            padding-bottom: 8px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 6px 0;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        .info-label {
+            color: #8C827A;
+            font-weight: 600;
+            width: 35%;
+        }
+        .info-value {
+            color: #2D251E;
+            font-weight: 700;
+            width: 65%;
+        }
+        .notes-box {
+            background-color: #FFFFFF;
+            border: 1px solid #EADBCE;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #4A423A;
+            line-height: 1.5;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .footer {
+            background-color: #FAF8F5;
+            border-top: 1px solid #EADBCE;
+            padding: 24px 32px;
+            text-align: center;
+        }
+        .footer-text {
+            font-size: 11px;
+            color: #9E958D;
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="main-card">
+        <div class="header">
+            <h1 class="brand-title">OTTIMA</h1>
+            <div class="brand-subtitle">Finishing &amp; Project Tracking</div>
+        </div>
+        <div class="content">
+            <span class="badge">Daily Update</span>
+            <div class="greeting">Hello <span th:text="${adminName}">Admin</span>,</div>
+            <p class="text">
+                A new daily progress update has been submitted by engineer <strong th:text="${engineerName}">Engineer</strong> and is pending your review and approval.
+            </p>
+
+            <div class="info-card">
+                <div class="info-title" th:text="${updateTitle}">Site Inspection &amp; Plastering</div>
+                <table class="info-table">
+                    <tr>
+                        <td class="info-label">Project:</td>
+                        <td class="info-value" th:text="${projectName}">Villa Residence</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Project Item:</td>
+                        <td class="info-value" th:text="${itemName}">Plastering Works</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Submitted By:</td>
+                        <td class="info-value" th:text="${engineerName}">Eng. Ahmed</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Date:</td>
+                        <td class="info-value" th:text="${createdAt}">2026-09-12 14:30</td>
+                    </tr>
+                </table>
+
+                <div th:if="${notes != null and !notes.isEmpty()}">
+                    <div style="font-size: 12px; font-weight: 700; color: #8C827A; margin-top: 12px; text-transform: uppercase;">Engineer Notes:</div>
+                    <div class="notes-box" th:text="${notes}">Progress completed according to schedule.</div>
+                </div>
+            </div>
+
+            <p class="text" style="margin-bottom: 0;">
+                Please sign in to the OTTIMA Admin Portal to review photos and approve or reject this submission.<br><br>
+                Best regards,<br>
+                <strong>The OTTIMA System</strong>
+            </p>
+        </div>
+        <div class="footer">
+            <p class="footer-text">&copy; 2026 OTTIMA. All rights reserved.</p>
+            <p class="footer-text">This is an automated system notification.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

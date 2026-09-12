@@ -51,11 +51,13 @@ public class ActivityLoggingAspect {
             Object result = joinPoint.proceed();
 
             Map<String, Object> outputData = null;
+
             if (result != null) {
                 try {
-                    outputData = objectMapper.convertValue(result, new TypeReference<Map<String, Object>>() {});
+                    outputData = new HashMap<>();
+                    outputData.put("result", result);
                 } catch (Exception ex) {
-                    log.warn("Could not serialize output data for logging", ex);
+                    log.warn("Could not prepare output data for logging", ex);
                 }
             }
 

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -18,10 +19,13 @@ public class ProjectSummaryResponse {
     private UUID projectId;
     private String nameAr;
     private String nameEn;
+    private String addressAr;
+    private String addressEn;
     private String clientName;
     private String engineerName;
     private ProjectStatus overallStatus;
     private LocalDate targetCompletionDate;
+    private Instant deletedAt;
 
     private BigDecimal overallProgressPercentage;
     private BigDecimal totalCalculatedSpent;

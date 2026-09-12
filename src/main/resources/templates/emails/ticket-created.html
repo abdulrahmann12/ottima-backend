@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Internal Request - OTTIMA</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F8F6F2;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #2D251E;
+            -webkit-font-smoothing: antialiased;
+        }
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #F8F6F2;
+            padding: 40px 0;
+        }
+        .main-card {
+            max-width: 580px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #EADBCE;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(140, 109, 83, 0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #8C6D53 0%, #6E5038 100%);
+            padding: 32px 24px;
+            text-align: center;
+            border-bottom: 3px solid #D4A373;
+        }
+        .brand-title {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .brand-subtitle {
+            color: #F3ECE4;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+        .content {
+            padding: 36px 32px;
+        }
+        .badge {
+            display: inline-block;
+            background-color: #FAF4EE;
+            color: #8C6D53;
+            border: 1px solid #D8C7B8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+        .greeting {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2D251E;
+            margin-bottom: 12px;
+        }
+        .text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #554D46;
+            margin: 0 0 20px 0;
+        }
+        .info-card {
+            background-color: #FAF7F4;
+            border: 1px solid #EADBCE;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2D251E;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #EADBCE;
+            padding-bottom: 8px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 6px 0;
+            font-size: 13px;
+            vertical-align: top;
+        }
+        .info-label {
+            color: #8C827A;
+            font-weight: 600;
+            width: 35%;
+        }
+        .info-value {
+            color: #2D251E;
+            font-weight: 700;
+            width: 65%;
+        }
+        .amount-highlight {
+            color: #8C6D53;
+            font-size: 15px;
+            font-family: monospace;
+            font-weight: 800;
+        }
+        .notes-box {
+            background-color: #FFFFFF;
+            border: 1px solid #EADBCE;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #4A423A;
+            line-height: 1.5;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .footer {
+            background-color: #FAF8F5;
+            border-top: 1px solid #EADBCE;
+            padding: 24px 32px;
+            text-align: center;
+        }
+        .footer-text {
+            font-size: 11px;
+            color: #9E958D;
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="main-card">
+        <div class="header">
+            <h1 class="brand-title">OTTIMA</h1>
+            <div class="brand-subtitle">Internal Requests &amp; Project Coordination</div>
+        </div>
+        <div class="content">
+            <span class="badge" th:text="${ticketType}">Internal Request</span>
+            <div class="greeting">Hello <span th:text="${receiverName}">User</span>,</div>
+            <p class="text">
+                You have received a new internal request from <strong th:text="${senderName}">Sender</strong> (<span th:text="${senderRole}">User</span>) on project <strong th:text="${projectName}">Project</strong>.
+            </p>
+
+            <div class="info-card">
+                <div class="info-title" th:text="${ticketTitle}">Urgent Site Materials Approval</div>
+                <table class="info-table">
+                    <tr>
+                        <td class="info-label">Project:</td>
+                        <td class="info-value" th:text="${projectName}">Villa Residence</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Request Type:</td>
+                        <td class="info-value" th:text="${ticketType}">Site Instruction</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Sent By:</td>
+                        <td class="info-value">
+                            <span th:text="${senderName}">Eng. Ahmed</span>
+                            (<span th:text="${senderRole}">ENGINEER</span>)
+                        </td>
+                    </tr>
+                    <tr th:if="${amount != null}">
+                        <td class="info-label">Expense Amount:</td>
+                        <td class="info-value amount-highlight">
+                            <span th:text="${#numbers.formatDecimal(amount, 1, 'COMMA', 2, 'POINT')}">0.00</span> EGP
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Date &amp; Time:</td>
+                        <td class="info-value" th:text="${createdAt}">2026-09-12 14:30</td>
+                    </tr>
+                </table>
+
+                <div th:if="${description != null and !description.isEmpty()}">
+                    <div style="font-size: 12px; font-weight: 700; color: #8C827A; margin-top: 12px; text-transform: uppercase;">Details &amp; Instructions:</div>
+                    <div class="notes-box" th:text="${description}">Please review attached documents and confirm approval.</div>
+                </div>
+            </div>
+
+            <p class="text" style="margin-bottom: 0;">
+                Please sign in to the OTTIMA Portal to view attachments, respond in the project chat feed, or update request status.<br><br>
+                Best regards,<br>
+                <strong>The OTTIMA System</strong>
+            </p>
+        </div>
+        <div class="footer">
+            <p class="footer-text">&copy; 2026 OTTIMA. All rights reserved.</p>
+            <p class="footer-text">This is an automated internal communication notification.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -21,8 +21,12 @@ import com.ottima.finishing_tracking.ticket.mapper.TicketMapper;
 import com.ottima.finishing_tracking.ticket.repository.InternalTicketRepository;
 import com.ottima.finishing_tracking.user.entity.User;
 import com.ottima.finishing_tracking.user.repository.UserRepository;
+import com.ottima.finishing_tracking.common.events.TicketCreatedEmailEvent;
+import com.ottima.finishing_tracking.config.rabbitconfig.RabbitConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,6 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Validated
+@Slf4j
 public class TicketService {
 
     private final InternalTicketRepository internalTicketRepository;
@@ -48,6 +54,7 @@ public class TicketService {
     private final TicketMapper ticketMapper;
     private final AuthenticatedUserService authenticatedUserService;
     private final ApplicationEventPublisher eventPublisher;
+    private final RabbitTemplate rabbitTemplate;
 
     // ==========================================
     // === Core Business Logic (Create, Update, Delete) ===
@@ -89,6 +96,7 @@ public class TicketService {
 
         InternalTicket savedTicket = internalTicketRepository.save(ticket);
 
+        // In-app notification
         eventPublisher.publishEvent(TicketCreatedEvent.builder()
                 .ticketId(savedTicket.getTicketId())
                 .receiverId(savedTicket.getReceiver().getUserId())
@@ -97,6 +105,35 @@ public class TicketService {
                 .senderNameEn(currentSender.getFullNameEn())
                 .ticketTitle(savedTicket.getTitle())
                 .build());
+
+        // Asynchronous email notification via RabbitMQ
+        try {
+            if (receiver.getEmail() != null && !receiver.getEmail().isBlank()) {
+                String senderDisplayName = currentSender.getFullNameEn() != null ? currentSender.getFullNameEn() : currentSender.getUsername();
+                String receiverDisplayName = receiver.getFullNameEn() != null ? receiver.getFullNameEn() : receiver.getUsername();
+
+                TicketCreatedEmailEvent emailEvent = TicketCreatedEmailEvent.builder()
+                        .receiverEmail(receiver.getEmail())
+                        .receiverName(receiverDisplayName)
+                        .senderName(senderDisplayName)
+                        .senderRole(currentSender.getRole().getRoleName())
+                        .projectNameEn(project.getNameEn())
+                        .projectNameAr(project.getNameAr())
+                        .ticketType(savedTicket.getTicketType().name())
+                        .ticketTitle(savedTicket.getTitle())
+                        .description(savedTicket.getDescription())
+                        .amount(savedTicket.getAmount())
+                        .ticketId(savedTicket.getTicketId())
+                        .projectId(project.getProjectId())
+                        .timestamp(Instant.now())
+                        .build();
+
+                rabbitTemplate.convertAndSend(RabbitConstants.NOTIFICATION_EXCHANGE, RabbitConstants.TICKET_CREATED_KEY, emailEvent);
+                log.info("Published TicketCreatedEmailEvent to RabbitMQ for receiver {}", receiver.getEmail());
+            }
+        } catch (Exception e) {
+            log.error("Failed to publish TicketCreatedEmailEvent via RabbitMQ for ticket {}", savedTicket.getTicketId(), e);
+        }
 
         return ticketMapper.toResponse(savedTicket);
     }

@@ -69,7 +69,7 @@ public class UserService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.USER_ENTITY, details = Messages.USER_UPDATED_LOG)
     @Transactional
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = {"users","clientsList","engineersList","adminsList"}, allEntries = true)
     public UserResponse updateMyProfile(@Valid UpdateProfileRequest request) {
         User user = authenticatedUserService.getCurrentUser();
 
@@ -90,7 +90,7 @@ public class UserService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.USER_ENTITY, details = Messages.USER_UPDATED_LOG)
     @Transactional
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = {"users", "adminsList", "engineersList", "clientsList", "dashboardSummary"}, allEntries = true)
     public UserResponse updateUserByAdmin(Long userId, @Valid AdminUpdateUserRequest request) {
         User user = userRepository.findByIdWithRole(userId).orElseThrow(UserNotFoundException::new);
 
@@ -142,7 +142,7 @@ public class UserService {
 
     @LogActivity(actionType = ActionType.DELETE, entityName = Constants.USER_ENTITY, details = Messages.USER_DELETED_LOG)
     @Transactional
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = {"users", "adminsList", "engineersList", "clientsList", "dashboardSummary"}, allEntries = true)
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         if (!user.isActive()) {
@@ -155,7 +155,7 @@ public class UserService {
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.USER_ENTITY, details = Messages.USER_ACTIVATED_LOG)
     @Transactional
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = {"users", "adminsList", "engineersList", "clientsList", "dashboardSummary"}, allEntries = true)
     public void activateUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         if (user.isActive()) {

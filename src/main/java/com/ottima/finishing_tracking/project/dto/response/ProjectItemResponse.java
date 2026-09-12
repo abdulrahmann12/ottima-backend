@@ -15,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProjectItemResponse {
     private UUID projectItemId;
+    private UUID standardItemId;
     private String itemNameAr;
     private String itemNameEn;
     private ProjectItemStatus status;

@@ -17,6 +17,7 @@ import java.math.RoundingMode;
 @Mapper(componentModel = "spring", builder = @org.mapstruct.Builder(disableBuilder = true))
 public interface ProjectItemMapper {
 
+    @Mapping(target = "standardItemId", source = "standardItem.itemId")
     @Mapping(target = "itemNameAr", source = "standardItem.nameAr")
     @Mapping(target = "itemNameEn", source = "standardItem.nameEn")
     @Mapping(target = "calculatedSpent", ignore = true)

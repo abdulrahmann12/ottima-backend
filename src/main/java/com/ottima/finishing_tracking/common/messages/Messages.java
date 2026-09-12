@@ -108,6 +108,7 @@ public class Messages {
     public static final String PROJECT_CREATED = "Project created successfully";
     public static final String PROJECT_UPDATED = "Project updated successfully";
     public static final String PROJECT_DELETED = "Project deleted successfully";
+    public static final String PROJECT_RESTORED = "Project restored successfully";
     public static final String PROJECT_STATUS_CHANGED = "Project status updated successfully";
     public static final String PROJECT_FETCHED = "Project fetched successfully";
     public static final String PROJECTS_FETCHED = "Projects fetched successfully";
@@ -186,6 +187,7 @@ public class Messages {
     public static final String PROJECT_CREATED_LOG = "A new project was created";
     public static final String PROJECT_UPDATED_LOG = "Project details were updated";
     public static final String PROJECT_DELETED_LOG = "A project was soft-deleted";
+    public static final String PROJECT_RESTORED_LOG = "A deleted project was restored";
     public static final String PROJECT_STATUS_CHANGED_LOG = "Project status was changed";
     public static final String PROJECT_ITEMS_ASSIGNED_LOG = "Items were assigned to the project";
     public static final String PROJECT_ITEM_CONFIG_UPDATED_LOG = "Project item configuration was updated";

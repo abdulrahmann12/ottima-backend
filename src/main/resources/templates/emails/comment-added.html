@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Change Request - OTTIMA</title>
+    <title>New Client Comment - OTTIMA</title>
     <style>
         body {
             margin: 0;
@@ -20,7 +20,7 @@
             padding: 40px 0;
         }
         .main-card {
-            max-width: 560px;
+            max-width: 580px;
             margin: 0 auto;
             background-color: #FFFFFF;
             border-radius: 16px;
@@ -52,6 +52,19 @@
         .content {
             padding: 36px 32px;
         }
+        .badge {
+            display: inline-block;
+            background-color: #FAF4EE;
+            color: #8C6D53;
+            border: 1px solid #D8C7B8;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
         .greeting {
             font-size: 18px;
             font-weight: 700;
@@ -62,64 +75,54 @@
             font-size: 14px;
             line-height: 1.6;
             color: #554D46;
-            margin: 0 0 24px 0;
+            margin: 0 0 20px 0;
         }
-        .detail-box {
+        .info-card {
             background-color: #FAF7F4;
             border: 1px solid #EADBCE;
             border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
+            padding: 20px;
+            margin: 20px 0;
         }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 6px 0;
             font-size: 13px;
-            margin: 6px 0;
+            vertical-align: top;
         }
-        .detail-label {
+        .info-label {
             color: #8C827A;
             font-weight: 600;
+            width: 35%;
         }
-        .detail-value {
+        .info-value {
             color: #2D251E;
             font-weight: 700;
+            width: 65%;
         }
-        .code-box {
-            background-color: #FAF4EE;
-            border: 2px dashed #8C6D53;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin: 24px 0;
+        .comment-box {
+            background-color: #EFF6FF;
+            border-left: 4px solid #3B82F6;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 16px;
+            margin-top: 14px;
         }
-        .code-label {
+        .comment-header {
             font-size: 11px;
             font-weight: 700;
-            color: #8C6D53;
+            color: #2563EB;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             margin-bottom: 6px;
         }
-        .code-value {
-            font-size: 32px;
-            font-weight: 800;
-            color: #2D251E;
-            letter-spacing: 6px;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        .warning-box {
-            background-color: #FFFDF9;
-            border-left: 3px solid #D4A373;
-            padding: 12px 16px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 24px;
-        }
-        .warning-text {
-            font-size: 12px;
-            color: #7A6958;
+        .comment-content {
+            font-size: 13px;
+            color: #1E3A8A;
+            line-height: 1.6;
             margin: 0;
-            line-height: 1.5;
         }
         .footer {
             background-color: #FAF8F5;
@@ -143,36 +146,47 @@
             <div class="brand-subtitle">Finishing &amp; Project Tracking</div>
         </div>
         <div class="content">
-            <div class="greeting">Hello <span th:text="${name}">User</span>,</div>
+            <span class="badge">Client Inquiry</span>
+            <div class="greeting">Hello <span th:text="${adminName}">Admin</span>,</div>
             <p class="text">
-                A request has been made to change the email address associated with your OTTIMA account to:
+                Client <strong th:text="${clientName}">Client</strong> has added a new comment on a daily update for project <strong th:text="${projectName}">Project</strong>.
             </p>
-            <div class="detail-box">
-                <div class="detail-row">
-                    <span class="detail-label">New Email Address:</span>
-                    <span class="detail-value" th:text="${newMail}">new.email@example.com</span>
+
+            <div class="info-card">
+                <table class="info-table">
+                    <tr>
+                        <td class="info-label">Project:</td>
+                        <td class="info-value" th:text="${projectName}">Villa Residence</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Project Item:</td>
+                        <td class="info-value" th:text="${itemName}">Plastering Works</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Client Name:</td>
+                        <td class="info-value" th:text="${clientName}">Client Full Name</td>
+                    </tr>
+                    <tr>
+                        <td class="info-label">Submitted At:</td>
+                        <td class="info-value" th:text="${createdAt}">2026-09-12 15:30</td>
+                    </tr>
+                </table>
+
+                <div class="comment-box">
+                    <div class="comment-header">Client Message:</div>
+                    <p class="comment-content" th:text="${commentText}">Comment text from client...</p>
                 </div>
             </div>
-            <p class="text">
-                Please enter the verification code below in your portal to confirm this change:
-            </p>
-            <div class="code-box">
-                <div class="code-label">Confirmation Code</div>
-                <div class="code-value" th:text="${code}">123456</div>
-            </div>
-            <div class="warning-box">
-                <p class="warning-text">
-                    <strong>Security Notice:</strong> If you did not initiate this email change request, please sign in to your OTTIMA account and update your password immediately.
-                </p>
-            </div>
+
             <p class="text" style="margin-bottom: 0;">
+                Please log in to the OTTIMA Comments Portal to post an official reply to the client.<br><br>
                 Best regards,<br>
-                <strong>The OTTIMA Team</strong>
+                <strong>The OTTIMA System</strong>
             </p>
         </div>
         <div class="footer">
             <p class="footer-text">&copy; 2026 OTTIMA. All rights reserved.</p>
-            <p class="footer-text">This is an automated system email. Please do not reply directly to this message.</p>
+            <p class="footer-text">This is an automated system notification.</p>
         </div>
     </div>
 </div>

@@ -17,6 +17,12 @@ public class DashboardSummaryResponse {
     private long totalClients;
     private long totalEngineers;
     private long totalAdmins;
+    private long totalProjects;
     private long activeProjects;
     private long completedProjects;
+    private long pausedProjects;
+    private long deliveredProjects;
+    private long totalStandardItems;
+    private long totalDailyUpdates;
+    private long totalComments;
 }

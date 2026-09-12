@@ -23,6 +23,8 @@ public interface TicketMapper {
     InternalTicket toEntity(CreateTicketRequest request);
 
     @Mapping(target = "projectId", source = "project.projectId")
+    @Mapping(target = "projectNameAr", source = "project.nameAr")
+    @Mapping(target = "projectNameEn", source = "project.nameEn")
     @Mapping(target = "senderId", source = "sender.userId")
     @Mapping(target = "senderNameAr", source = "sender.fullNameAr")
     @Mapping(target = "senderNameEn", source = "sender.fullNameEn")

@@ -31,7 +31,7 @@ public class AdminController {
     }
 
     @Operation(summary = SwaggerMessages.GET_ALL_ADMINS, description = SwaggerMessages.GET_ALL_ADMINS_DESC)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ENGINEER')")
     @GetMapping
     public ResponseEntity<BaseResponse> getAllAdmins(
             @RequestParam(defaultValue = "0") int page,

@@ -5,6 +5,11 @@ import com.ottima.finishing_tracking.common.messages.Constants;
 import com.ottima.finishing_tracking.logging.annotation.LogActivity;
 import com.ottima.finishing_tracking.logging.enums.ActionType;
 import com.ottima.finishing_tracking.admin.dto.response.DashboardSummaryResponse;
+import com.ottima.finishing_tracking.comment.repository.CommentRepository;
+import com.ottima.finishing_tracking.daily_update.repository.DailyUpdateRepository;
+import com.ottima.finishing_tracking.project.enums.ProjectStatus;
+import com.ottima.finishing_tracking.project.repository.ProjectRepository;
+import com.ottima.finishing_tracking.standard_item.repository.StandardItemRepository;
 import com.ottima.finishing_tracking.user.dto.request.CreateUserRequest;
 import com.ottima.finishing_tracking.user.dto.response.UserResponse;
 import com.ottima.finishing_tracking.user.dto.response.UserSummaryResponse;
@@ -29,6 +34,10 @@ public class AdminService {
     private final UserService userService;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+    private final StandardItemRepository standardItemRepository;
+    private final DailyUpdateRepository dailyUpdateRepository;
+    private final CommentRepository commentRepository;
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.ADMIN_ENTITY, details = Messages.ADMIN_CREATED_LOG)
     @Transactional
@@ -52,8 +61,14 @@ public class AdminService {
         long totalEngineers = userRepository.countByRole_RoleName("ENGINEER");
         long totalAdmins = userRepository.countByRole_RoleName("ADMIN");
 
-        long activeProjects = 0;
-        long completedProjects = 0;
+        long activeProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.ACTIVE);
+        long pausedProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.PAUSED);
+        long deliveredProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.DELIVERED);
+        long totalProjects = projectRepository.countByDeletesAtIsNull();
+
+        long totalStandardItems = standardItemRepository.count();
+        long totalDailyUpdates = dailyUpdateRepository.count();
+        long totalComments = commentRepository.count();
 
         return DashboardSummaryResponse.builder()
                 .totalActiveUsers(totalActiveUsers)
@@ -61,8 +76,14 @@ public class AdminService {
                 .totalClients(totalClients)
                 .totalEngineers(totalEngineers)
                 .totalAdmins(totalAdmins)
+                .totalProjects(totalProjects)
                 .activeProjects(activeProjects)
-                .completedProjects(completedProjects)
+        //        .completedProjects(completedProjects)
+                .pausedProjects(pausedProjects)
+                .deliveredProjects(deliveredProjects)
+                .totalStandardItems(totalStandardItems)
+                .totalDailyUpdates(totalDailyUpdates)
+                .totalComments(totalComments)
                 .build();
     }
 }

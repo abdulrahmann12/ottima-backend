@@ -1,6 +1,8 @@
 package com.ottima.finishing_tracking.logging.service;
 
 import com.ottima.finishing_tracking.logging.dto.response.ActivityLogResponse;
+import com.ottima.finishing_tracking.logging.enums.ActionType;
+import com.ottima.finishing_tracking.logging.enums.ActivityStatus;
 import com.ottima.finishing_tracking.logging.repository.UserActivityLogRepository;
 import com.ottima.finishing_tracking.logging.mapper.ActivityLogMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,11 @@ public class ActivityLogService {
 
     public Page<ActivityLogResponse> getLogsByUserId(Long userId, Pageable pageable) {
         return repository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
+                .map(mapper::toResponse);
+    }
+
+    public Page<ActivityLogResponse> getLogs(Long userId, ActionType action, ActivityStatus status, String entityName, Pageable pageable) {
+        return repository.findWithFilters(userId, action, status, entityName, pageable)
                 .map(mapper::toResponse);
     }
 }

@@ -44,13 +44,23 @@ public class NotificationEventListener {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleCommentEvent(CommentEvent event) {
-        String title = event.isReply() ? "New Reply to Your Comment" : "New Comment";
-        String action = event.isReply() ? "replied to your comment" : "added a new comment";
-        String message = String.format("%s %s on project: %s", event.getSenderName(), action, event.getProjectNameEn());
+        if (event.isReply()) {
+            String title = "New Reply to Your Comment";
+            String action = "replied to your comment";
+            String message = String.format("%s %s on project: %s", event.getSenderName(), action, event.getProjectNameEn());
 
-        notificationService.createAndSendNotification(
-                event.getReceiverId(), title, message, ReferenceType.COMMENT, event.getCommentId()
-        );
+            notificationService.createAndSendNotification(
+                    event.getReceiverId(), title, message, ReferenceType.COMMENT, event.getCommentId()
+            );
+        } else {
+            String title = "New Comment";
+            String action = "added a new comment";
+            String message = String.format("%s %s on project: %s", event.getSenderName(), action, event.getProjectNameEn());
+
+            notificationService.createAndSendNotificationToAllAdmins(
+                    title, message, ReferenceType.COMMENT, event.getCommentId()
+            );
+        }
     }
 
     @Async
@@ -74,8 +84,8 @@ public class NotificationEventListener {
                 event.getEngineerName(),
                 event.getProjectNameEn());
 
-        notificationService.createAndSendNotification(
-                event.getAdminId(), title, message, ReferenceType.DAILY_UPDATE, event.getDailyUpdateId()
+        notificationService.createAndSendNotificationToAllAdmins(
+                title, message, ReferenceType.DAILY_UPDATE, event.getDailyUpdateId()
         );
     }
 }

@@ -83,4 +83,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u JOIN FETCH u.role WHERE u.role.roleName = :roleName AND u.active = true ORDER BY u.userId ASC")
     List<User> findFirstActiveByRole_RoleName(@Param("roleName") String roleName);
+
+    @Query("SELECT u.userId FROM User u WHERE UPPER(u.role.roleName) IN ('ADMIN', 'ROLE_ADMIN') AND u.active = true")
+    List<Long> findActiveAdminUserIds();
 }

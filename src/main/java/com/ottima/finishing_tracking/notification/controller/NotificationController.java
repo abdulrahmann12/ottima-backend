@@ -52,4 +52,21 @@ public class NotificationController {
                 new BaseResponse("All notifications marked as read successfully", null)
         );
     }
+
+    @Operation(summary = "Resolve notification context", description = "Resolve parent entity IDs (projectId, projectItemId, dailyUpdateId) for deep-linking")
+    @GetMapping("/resolve-context")
+    public ResponseEntity<BaseResponse> resolveContext(
+            @RequestParam(required = false) String type,
+            @RequestParam UUID referenceId) {
+        com.ottima.finishing_tracking.notification.enums.ReferenceType refType = null;
+        if (type != null && !type.isBlank()) {
+            try {
+                refType = com.ottima.finishing_tracking.notification.enums.ReferenceType.valueOf(type.trim().toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return ResponseEntity.ok(
+                new BaseResponse("Notification context resolved successfully", notificationService.resolveContext(refType, referenceId))
+        );
+    }
 }

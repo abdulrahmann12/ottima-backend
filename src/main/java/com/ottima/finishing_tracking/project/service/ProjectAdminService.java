@@ -178,6 +178,16 @@ public class ProjectAdminService {
         projectRepository.save(project);
     }
 
+    @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_RESTORED_LOG)
+    @Transactional
+    @CacheEvict(value = {"projectsList", "projectDetails", "dashboardSummary"}, allEntries = true)
+    public ProjectResponse restoreProject(UUID projectId) {
+        Project project = projectRepository.findByIdWithItems(projectId)
+                .orElseThrow(ProjectNotFoundException::new);
+        project.setDeletesAt(null);
+        return projectMapper.toResponse(projectRepository.save(project));
+    }
+
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEM_CONFIG_UPDATED_LOG)
     @Transactional
     @CacheEvict(value = {"projectsList", "projectDetails"}, allEntries = true)

@@ -13,6 +13,8 @@ import java.util.UUID;
 public class TicketResponse {
     private UUID ticketId;
     private UUID projectId;
+    private String projectNameAr;
+    private String projectNameEn;
 
     // Sender Details
     private Long senderId;

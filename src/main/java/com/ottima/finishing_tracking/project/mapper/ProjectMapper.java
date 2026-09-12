@@ -31,6 +31,7 @@ public interface ProjectMapper {
     @Mapping(target = "projectId", source = "projectId")
     @Mapping(target = "clientName", source = "client.username")
     @Mapping(target = "engineerName", source = "engineer.username")
+    @Mapping(target = "deletedAt", source = "deletesAt")
     @Mapping(target = "overallProgressPercentage", ignore = true)
     @Mapping(target = "totalCalculatedSpent", ignore = true)
     ProjectSummaryResponse toSummaryResponse(Project entity);
@@ -83,6 +84,8 @@ public interface ProjectMapper {
     void updateProjectFromRequest(UpdateProjectRequest request, @MappingTarget Project entity);
 
     @Mapping(target = "projectId", source = "projectId")
+    @Mapping(target = "clientName", source = "client.username")
+    @Mapping(target = "engineerName", source = "engineer.username")
     @Mapping(target = "items", source = "projectItems")
     @Mapping(target = "overallProgressPercentage", ignore = true)
     @Mapping(target = "totalCalculatedSpent", ignore = true)

@@ -58,6 +58,12 @@ public class AdminProjectController {
         return ResponseEntity.ok(new BaseResponse(Messages.PROJECT_DELETED));
     }
 
+    @Operation(summary = "Restore Project", description = "Restore a soft-deleted project by clearing its deletedAt timestamp")
+    @PatchMapping("/{projectId}/restore")
+    public ResponseEntity<BaseResponse> restoreProject(@PathVariable UUID projectId) {
+        return ResponseEntity.ok(new BaseResponse(Messages.PROJECT_RESTORED, projectAdminService.restoreProject(projectId)));
+    }
+
     @Operation(summary = SwaggerMessages.CHANGE_PROJECT_STATUS, description = SwaggerMessages.CHANGE_PROJECT_STATUS_DESC)
     @PatchMapping("/{projectId}/status")
     public ResponseEntity<BaseResponse> changeProjectStatus(
@@ -69,9 +75,15 @@ public class AdminProjectController {
 
     @Operation(summary = SwaggerMessages.GET_ALL_PROJECTS_ADMIN, description = SwaggerMessages.GET_ALL_PROJECTS_ADMIN_DESC)
     @GetMapping
-    public ResponseEntity<BaseResponse> getAllProjects(Pageable pageable) {
+    public ResponseEntity<BaseResponse> getAllProjects(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long clientId,
+            @RequestParam(required = false) Long engineerId,
+            @RequestParam(required = false) Boolean isDeleted,
+            Pageable pageable) {
         return ResponseEntity.ok(
-                new BaseResponse(Messages.PROJECTS_FETCHED, projectDashboardService.getAllProjectsForAdmin(pageable)));
+                new BaseResponse(Messages.PROJECTS_FETCHED,
+                        projectDashboardService.getAllProjectsForAdmin(search, clientId, engineerId, isDeleted, pageable)));
     }
 
     @Operation(summary = SwaggerMessages.GET_PROJECT_DETAILS_ADMIN, description = SwaggerMessages.GET_PROJECT_DETAILS_ADMIN_DESC)

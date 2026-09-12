@@ -58,4 +58,12 @@ public class AdminCommentController {
                 new BaseResponse(Messages.COMMENT_DELETED, null)
         );
     }
+
+    @Operation(summary = "Resolve comment context", description = "Get project and daily update context for a comment")
+    @GetMapping("/comments/{commentId}/context")
+    public ResponseEntity<BaseResponse> getCommentContext(@PathVariable UUID commentId) {
+        return ResponseEntity.ok(
+                new BaseResponse("Comment context resolved successfully", commentService.resolveCommentContext(commentId))
+        );
+    }
 }

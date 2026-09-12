@@ -19,12 +19,12 @@ import java.util.UUID;
 @Table(name = "projects", indexes = {
         @Index(name = "idx_project_client_active", columnList = "client_id, deletes_at"),
         @Index(name = "idx_project_engineer_active", columnList = "engineer_id, deletes_at")
-})@Setter
+})
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLRestriction("deletes_at IS NULL")
 public class Project {
 
     @Id
