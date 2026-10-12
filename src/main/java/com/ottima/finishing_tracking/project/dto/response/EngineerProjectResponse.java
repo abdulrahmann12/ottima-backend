@@ -17,6 +17,7 @@ public class EngineerProjectResponse {
     private String addressEn;
     private String clientName;
     private String engineerName;
+    private List<Long> engineerIds;
     private ProjectStatus overallStatus;
     private LocalDate targetCompletionDate;
     private LocalDate startDate;

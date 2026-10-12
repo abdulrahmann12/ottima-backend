@@ -9,6 +9,7 @@ import com.ottima.finishing_tracking.daily_update.dto.request.EvaluateDailyUpdat
 import com.ottima.finishing_tracking.daily_update.dto.response.DailyUpdateContextResponse;
 import com.ottima.finishing_tracking.daily_update.dto.response.DailyUpdateResponse;
 import com.ottima.finishing_tracking.daily_update.entity.DailyUpdate;
+import com.ottima.finishing_tracking.daily_update.entity.UpdateImage;
 import com.ottima.finishing_tracking.daily_update.enums.UpdateStatus;
 import com.ottima.finishing_tracking.daily_update.mapper.DailyUpdateMapper;
 import com.ottima.finishing_tracking.daily_update.repository.DailyUpdateRepository;
@@ -17,6 +18,7 @@ import com.ottima.finishing_tracking.exception.ProjectAccessDeniedException;
 import com.ottima.finishing_tracking.exception.ProjectItemNotFoundException;
 import com.ottima.finishing_tracking.notification.event.DailyUpdateStatusChangedEvent;
 import com.ottima.finishing_tracking.notification.event.DailyUpdateSubmittedEvent;
+import com.ottima.finishing_tracking.project.entity.Project;
 import com.ottima.finishing_tracking.project.entity.ProjectItem;
 import com.ottima.finishing_tracking.project.repository.ProjectItemRepository;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
@@ -173,12 +175,39 @@ public class DailyUpdateService {
         User currentAdmin = authenticatedUserService.getCurrentUser();
         dailyUpdate.setApprovedByAdmin(currentAdmin);
 
-        if (request.getImageEvaluations() != null && dailyUpdate.getImages() != null) {
-            for (EvaluateDailyUpdateRequest.ImageEvaluation eval : request.getImageEvaluations()) {
-                dailyUpdate.getImages().stream()
-                        .filter(img -> img.getUpdateImageId().equals(eval.getUpdateImageId()))
-                        .findFirst()
-                        .ifPresent(img -> img.setApproved(eval.getApproved()));
+        if (request.getStatus() == UpdateStatus.REJECTED) {
+            dailyUpdate.setRejectionReason(request.getRejectionReason());
+            if (dailyUpdate.getImages() != null) {
+                for (UpdateImage img : dailyUpdate.getImages()) {
+                    img.setApproved(false);
+                    String specificReason = null;
+                    if (request.getImageEvaluations() != null) {
+                        specificReason = request.getImageEvaluations().stream()
+                                .filter(eval -> eval.getUpdateImageId().equals(img.getUpdateImageId()))
+                                .map(EvaluateDailyUpdateRequest.ImageEvaluation::getRejectionReason)
+                                .filter(r -> r != null && !r.isBlank())
+                                .findFirst()
+                                .orElse(null);
+                    }
+                    img.setRejectionReason(specificReason != null ? specificReason : request.getRejectionReason());
+                }
+            }
+        } else {
+            dailyUpdate.setRejectionReason(null);
+            if (request.getImageEvaluations() != null && dailyUpdate.getImages() != null) {
+                for (EvaluateDailyUpdateRequest.ImageEvaluation eval : request.getImageEvaluations()) {
+                    dailyUpdate.getImages().stream()
+                            .filter(img -> img.getUpdateImageId().equals(eval.getUpdateImageId()))
+                            .findFirst()
+                            .ifPresent(img -> {
+                                img.setApproved(eval.getApproved());
+                                if (Boolean.FALSE.equals(eval.getApproved())) {
+                                    img.setRejectionReason(eval.getRejectionReason());
+                                } else {
+                                    img.setRejectionReason(null);
+                                }
+                            });
+                }
             }
         }
         DailyUpdate savedUpdate = dailyUpdateRepository.save(dailyUpdate);
@@ -189,6 +218,7 @@ public class DailyUpdateService {
                 .projectNameAr(savedUpdate.getProjectItem().getProject().getNameAr())
                 .projectNameEn(savedUpdate.getProjectItem().getProject().getNameEn())
                 .newStatus(savedUpdate.getStatus().name())
+                .rejectionReason(savedUpdate.getRejectionReason())
                 .build());
 
         // Publish email notification event to engineer via RabbitMQ
@@ -211,6 +241,7 @@ public class DailyUpdateService {
                         .updateTitle(savedUpdate.getTitle())
                         .status(savedUpdate.getStatus().name())
                         .notes(savedUpdate.getNotes())
+                        .rejectionReason(savedUpdate.getRejectionReason())
                         .timestamp(Instant.now())
                         .build();
 
@@ -251,6 +282,36 @@ public class DailyUpdateService {
                 .itemNameAr(standardItem != null ? standardItem.getNameAr() : "")
                 .itemNameEn(standardItem != null ? standardItem.getNameEn() : "")
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public DailyUpdateResponse getDailyUpdateById(UUID dailyUpdateId) {
+        DailyUpdate dailyUpdate = dailyUpdateRepository.findWithDetailsByDailyUpdateId(dailyUpdateId)
+                .orElseThrow(DailyUpdateNotFoundException::new);
+
+        User currentUser = authenticatedUserService.getCurrentUser();
+        String roleName = currentUser.getRole() != null ? currentUser.getRole().getRoleName() : "";
+
+        if ("CLIENT".equals(roleName)) {
+            Long projectOwnerId = dailyUpdate.getProjectItem().getProject().getClient().getUserId();
+            if (!projectOwnerId.equals(currentUser.getUserId())) {
+                throw new ProjectAccessDeniedException();
+            }
+            return dailyUpdateMapper.toResponse(dailyUpdate, true);
+        } else if ("ENGINEER".equals(roleName)) {
+            Project project = dailyUpdate.getProjectItem().getProject();
+            boolean isAssigned = project.isAssignedToEngineer(currentUser.getUserId());
+            boolean isOwner = dailyUpdate.getEngineer() != null &&
+                    dailyUpdate.getEngineer().getUserId().equals(currentUser.getUserId());
+            if (!isAssigned && !isOwner) {
+                throw new ProjectAccessDeniedException();
+            }
+            return dailyUpdateMapper.toResponse(dailyUpdate, false);
+        } else if ("ADMIN".equals(roleName)) {
+            return dailyUpdateMapper.toResponse(dailyUpdate, false);
+        } else {
+            throw new ProjectAccessDeniedException();
+        }
     }
 
     public Long getCurrentUserId() {

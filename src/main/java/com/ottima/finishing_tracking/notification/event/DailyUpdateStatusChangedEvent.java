@@ -15,4 +15,5 @@ public class DailyUpdateStatusChangedEvent {
     private String projectNameAr;
     private String projectNameEn;
     private String newStatus;
+    private String rejectionReason;
 }

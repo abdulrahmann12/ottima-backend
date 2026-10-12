@@ -22,7 +22,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import com.ottima.finishing_tracking.user.entity.User;
+import com.ottima.finishing_tracking.user.repository.UserRepository;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class ProjectDashboardService {
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
     private final AuthenticatedUserService authenticatedUserService;
+    private final UserRepository userRepository;
 
     public Page<ProjectSummaryResponse> getAllProjectsForAdmin(
             String search,
@@ -48,7 +53,14 @@ public class ProjectDashboardService {
     public ProjectResponse getProjectDetailsForAdmin(UUID projectId) {
         Project project = projectRepository.findByIdWithItems(projectId)
                 .orElseThrow(ProjectNotFoundException::new);
-        return projectMapper.toResponse(project);
+        ProjectResponse response = projectMapper.toResponse(project);
+        if (project.getEngineerIds() != null && !project.getEngineerIds().isEmpty()) {
+            List<User> engineers = userRepository.findAllById(project.getEngineerIds());
+            if (!engineers.isEmpty()) {
+                response.setEngineerName(engineers.stream().map(User::getUsername).collect(Collectors.joining(", ")));
+            }
+        }
+        return response;
     }
 
     @Cacheable(value = "projectsList", key = "'client-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
@@ -72,13 +84,20 @@ public class ProjectDashboardService {
             throw new ProjectAccessDeniedException();
         }
 
-        return projectMapper.toClientResponse(project);
+        ClientProjectResponse response = projectMapper.toClientResponse(project);
+        if (project.getEngineerIds() != null && !project.getEngineerIds().isEmpty()) {
+            List<User> engineers = userRepository.findAllById(project.getEngineerIds());
+            if (!engineers.isEmpty()) {
+                response.setEngineerName(engineers.stream().map(User::getUsername).collect(Collectors.joining(", ")));
+            }
+        }
+        return response;
     }
 
     @Cacheable(value = "projectsList", key = "'engineer-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<ProjectSummaryResponse> getAssignProjectsForEngineer(Pageable pageable) {
         Long currentEngineerId = authenticatedUserService.getCurrentUser().getUserId();
-        return projectRepository.findAllByEngineer_UserIdAndDeletesAtIsNull(currentEngineerId, pageable)
+        return projectRepository.findAssignedProjectsForEngineer(currentEngineerId, pageable)
                 .map(projectMapper::toSummaryResponse);
     }
 
@@ -97,7 +116,19 @@ public class ProjectDashboardService {
             throw new ProjectNotFoundException();
         }
 
-        return projectMapper.toEngineerResponse(project);
+        Long currentEngineerId = authenticatedUserService.getCurrentUser().getUserId();
+        if (!project.isAssignedToEngineer(currentEngineerId)) {
+            throw new ProjectAccessDeniedException();
+        }
+
+        EngineerProjectResponse response = projectMapper.toEngineerResponse(project);
+        if (project.getEngineerIds() != null && !project.getEngineerIds().isEmpty()) {
+            List<User> engineers = userRepository.findAllById(project.getEngineerIds());
+            if (!engineers.isEmpty()) {
+                response.setEngineerName(engineers.stream().map(User::getUsername).collect(Collectors.joining(", ")));
+            }
+        }
+        return response;
     }
 
     public Long getCurrentUserId() {

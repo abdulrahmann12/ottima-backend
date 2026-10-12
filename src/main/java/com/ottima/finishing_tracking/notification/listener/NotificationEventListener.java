@@ -68,8 +68,12 @@ public class NotificationEventListener {
     public void handleDailyUpdateStatusChanged(DailyUpdateStatusChangedEvent event) {
         String title = "Daily Update Status Changed";
         String statusAction = event.getNewStatus().equalsIgnoreCase("APPROVED") ? "approved" : "rejected";
-        // Swapped the arguments to match English grammar naturally
-        String message = String.format("The daily update for project %s has been %s", event.getProjectNameEn(), statusAction);
+        String message;
+        if (event.getNewStatus().equalsIgnoreCase("REJECTED") && event.getRejectionReason() != null && !event.getRejectionReason().isBlank()) {
+            message = String.format("The daily update for project %s was rejected: %s", event.getProjectNameEn(), event.getRejectionReason());
+        } else {
+            message = String.format("The daily update for project %s has been %s", event.getProjectNameEn(), statusAction);
+        }
 
         notificationService.createAndSendNotification(
                 event.getEngineerId(), title, message, ReferenceType.DAILY_UPDATE, event.getDailyUpdateId()
@@ -86,6 +90,27 @@ public class NotificationEventListener {
 
         notificationService.createAndSendNotificationToAllAdmins(
                 title, message, ReferenceType.DAILY_UPDATE, event.getDailyUpdateId()
+        );
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleProjectChatMessageSent(ProjectChatMessageSentEvent event) {
+        String title = "New Project Chat Message";
+        String projectName = event.getProjectNameEn() != null && !event.getProjectNameEn().isBlank()
+                ? event.getProjectNameEn()
+                : event.getProjectNameAr();
+        String message = String.format("%s sent a message in %s: %s",
+                event.getSenderName(),
+                projectName,
+                event.getMessageSnippet());
+
+        notificationService.createAndSendNotificationToMultipleUsers(
+                event.getRecipientIds(),
+                title,
+                message,
+                ReferenceType.PROJECT_CHAT,
+                event.getProjectId()
         );
     }
 }

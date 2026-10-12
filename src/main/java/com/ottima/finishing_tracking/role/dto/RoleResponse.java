@@ -13,6 +13,7 @@ public class RoleResponse {
 
     private Long roleId;
     private String roleName;
+    private long userCount;
     private Instant createdAt;
     private Instant updatedAt;
 }

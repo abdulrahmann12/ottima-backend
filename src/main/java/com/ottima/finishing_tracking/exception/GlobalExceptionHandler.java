@@ -14,11 +14,15 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import lombok.extern.slf4j.Slf4j;
 import javax.naming.AuthenticationException;
+
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
     // === Common Utility === //
@@ -111,6 +115,8 @@ public class GlobalExceptionHandler {
             VerificationCodeAlreadySentException.class,
             StandardItemAlreadyExistsException.class,
             StandardItemInUseException.class,
+            RoleInUseException.class,
+            SystemRoleModificationException.class,
             ProjectItemAlreadyExistsException.class,
             UnapprovedDailyUpdateCommentException.class,
             CommentAlreadyRepliedException.class,
@@ -196,6 +202,12 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<BaseResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        String message = String.format("Invalid value '%s' for parameter '%s'", ex.getValue(), ex.getName());
+        return buildErrorResponse(message, request, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity< BaseResponse> handleSpringJsonParseException(
             HttpMessageNotReadableException ex) {
@@ -222,7 +234,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<BaseResponse> handleDataIntegrityViolation(
-            DataIntegrityViolationException ex) {
+            DataIntegrityViolationException ex, WebRequest request) {
+
+        String msg = ex.getMessage();
+        if (msg != null && (msg.toLowerCase().contains("foreign") || msg.toLowerCase().contains("constraint") || msg.toLowerCase().contains("fk_"))) {
+            return buildErrorResponse("Cannot delete or update this record because it is currently in use by other records", request, HttpStatus.CONFLICT);
+        }
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new BaseResponse(Messages.EMAIL_ALREADY_OR_USERNAME_EXISTS));
@@ -237,11 +254,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity< BaseResponse> handleRuntime(RuntimeException ex, WebRequest request) {
+        log.error("Unhandled RuntimeException occurred at {}: ", request.getDescription(false), ex);
         return buildErrorResponse("An unexpected error occurred. Please try again later.", request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity< BaseResponse> handleAll(Exception ex, WebRequest request) {
+        log.error("Unhandled Exception occurred at {}: ", request.getDescription(false), ex);
         return buildErrorResponse("An unexpected error occurred. Please try again later.", request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

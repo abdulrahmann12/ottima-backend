@@ -21,7 +21,8 @@ import java.time.Instant;
 public class Token {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "token_seq")
+    @SequenceGenerator(name = "token_seq", sequenceName = "tokens_seq", allocationSize = 1)
     private Long tokenId;
 
     @Column(unique = true,length = 512)

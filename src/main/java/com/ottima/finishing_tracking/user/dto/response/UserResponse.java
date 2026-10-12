@@ -20,6 +20,7 @@ public class UserResponse {
     private String fullNameEn;
     private String phoneNumber;
     private String roleName;
+    private String preferredLanguage;
     private String requestCode;
     private boolean active;
     private Instant createdAt;

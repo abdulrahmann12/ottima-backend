@@ -22,9 +22,11 @@ public class CreateProjectRequest {
     @NotNull(message = ValidationMessages.CLIENT_ID_REQUIRED)
     private Long clientId;
 
-    @Schema(description = "ID of the engineer assigned to the project")
-    @NotNull(message = ValidationMessages.ENGINEER_ID_REQUIRED)
+    @Schema(description = "ID of the engineer assigned to the project (optional if engineerIds is provided)")
     private Long engineerId;
+
+    @Schema(description = "List of engineer IDs assigned to the project")
+    private java.util.List<Long> engineerIds;
 
     @Schema(description = "Arabic name of the project")
     @NotBlank(message = ValidationMessages.PROJECT_NAME_AR_REQUIRED)

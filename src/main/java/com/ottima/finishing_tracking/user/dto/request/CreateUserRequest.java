@@ -36,4 +36,6 @@ public class CreateUserRequest {
     @NotBlank(message = ValidationMessages.PHONE_NUMBER_REQUIRED)
     @Size(min = 11,max = 11, message = ValidationMessages.PHONE_NUMBER_SIZE)
     private String phoneNumber;
+
+    private String preferredLanguage;
 }

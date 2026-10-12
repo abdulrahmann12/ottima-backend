@@ -19,9 +19,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UpdateProjectRequest {
 
-    @Schema(description = "ID of the engineer assigned to the project (can be changed)")
-    @NotNull(message = ValidationMessages.ENGINEER_ID_REQUIRED)
+    @Schema(description = "ID of the engineer assigned to the project (optional if engineerIds is provided)")
     private Long engineerId;
+
+    @Schema(description = "List of engineer IDs assigned to the project")
+    private java.util.List<Long> engineerIds;
 
     @NotBlank(message = ValidationMessages.PROJECT_NAME_AR_REQUIRED)
     private String nameAr;

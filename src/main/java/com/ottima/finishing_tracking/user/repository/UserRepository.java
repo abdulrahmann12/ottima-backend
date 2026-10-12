@@ -34,8 +34,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
-    @Query(value = "SELECT u FROM User u JOIN FETCH u.role r WHERE r = :role",
-            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role")
+    @Query(value = "SELECT u FROM User u JOIN FETCH u.role r WHERE r = :role AND u.active = true",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role AND u.active = true")
     Page<User> findByRole(@Param("role") Role role, Pageable pageable);
 
     @Query(value = "SELECT u FROM User u JOIN FETCH u.role WHERE " +

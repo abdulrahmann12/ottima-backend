@@ -29,6 +29,9 @@ public class UpdateImage {
     @Column(name = "is_approved")
     private Boolean approved;
 
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

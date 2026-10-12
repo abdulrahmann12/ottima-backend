@@ -52,16 +52,43 @@ public class ProjectAdminService {
     @Transactional
     @CacheEvict(value = {"projectsList", "dashboardSummary"}, allEntries = true)
     public ProjectResponse createProject(CreateProjectRequest request) {
-        User client = validateAndGetUserByRole(request.getClientId(), "CLIENT", Messages.USER_NOT_CLIENT,Messages.CLIENT_NOT_FOUND);
-        User engineer = validateAndGetUserByRole(request.getEngineerId(), "ENGINEER", Messages.USER_NOT_ENGINEER,Messages.ENGINEER_NOT_FOUND);
+        User client = validateAndGetUserByRole(request.getClientId(), "CLIENT", Messages.USER_NOT_CLIENT, Messages.CLIENT_NOT_FOUND);
+
+        List<Long> engineerIds = new ArrayList<>();
+        if (request.getEngineerIds() != null && !request.getEngineerIds().isEmpty()) {
+            engineerIds.addAll(request.getEngineerIds());
+        } else if (request.getEngineerId() != null) {
+            engineerIds.add(request.getEngineerId());
+        }
+
+        if (engineerIds.isEmpty()) {
+            throw new IllegalArgumentException(Messages.ENGINEER_NOT_FOUND);
+        }
+
+        engineerIds = engineerIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+        User primaryEngineer = null;
+        List<User> assignedEngineers = new ArrayList<>();
+        for (Long engId : engineerIds) {
+            User eng = validateAndGetUserByRole(engId, "ENGINEER", Messages.USER_NOT_ENGINEER, Messages.ENGINEER_NOT_FOUND);
+            assignedEngineers.add(eng);
+            if (primaryEngineer == null) {
+                primaryEngineer = eng;
+            }
+        }
 
         Project project = projectMapper.toEntity(request);
         project.setClient(client);
         project.setOverallStatus(ProjectStatus.DELIVERED);
-        project.setEngineer(engineer);
+        project.setEngineer(primaryEngineer);
+        project.setEngineerIds(engineerIds);
 
         Project savedProject = projectRepository.save(project);
-        return projectMapper.toResponse(savedProject);
+        ProjectResponse response = projectMapper.toResponse(savedProject);
+        if (!assignedEngineers.isEmpty()) {
+            response.setEngineerName(assignedEngineers.stream().map(User::getUsername).collect(Collectors.joining(", ")));
+        }
+        return response;
     }
 
     @LogActivity(actionType = ActionType.UPDATE, entityName = Constants.PROJECT_ENTITY, details = Messages.PROJECT_UPDATED_LOG)
@@ -70,15 +97,39 @@ public class ProjectAdminService {
     public ProjectResponse updateProject(UUID projectId, UpdateProjectRequest request) {
         Project project = getProjectById(projectId);
 
-        if (!project.getEngineer().getUserId().equals(request.getEngineerId())) {
-            User newEngineer = validateAndGetUserByRole(request.getEngineerId(), "ENGINEER", Messages.USER_NOT_ENGINEER,Messages.ENGINEER_NOT_FOUND);
-            project.setEngineer(newEngineer);
+        List<Long> engineerIds = new ArrayList<>();
+        if (request.getEngineerIds() != null && !request.getEngineerIds().isEmpty()) {
+            engineerIds.addAll(request.getEngineerIds());
+        } else if (request.getEngineerId() != null) {
+            engineerIds.add(request.getEngineerId());
+        }
+
+        engineerIds = engineerIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList());
+
+        List<User> assignedEngineers = new ArrayList<>();
+        if (!engineerIds.isEmpty()) {
+            User primaryEngineer = null;
+            for (Long engId : engineerIds) {
+                User eng = validateAndGetUserByRole(engId, "ENGINEER", Messages.USER_NOT_ENGINEER, Messages.ENGINEER_NOT_FOUND);
+                assignedEngineers.add(eng);
+                if (primaryEngineer == null) {
+                    primaryEngineer = eng;
+                }
+            }
+            project.setEngineer(primaryEngineer);
+            project.setEngineerIds(engineerIds);
         }
 
         projectMapper.updateProjectFromRequest(request, project);
         Project updatedProject = projectRepository.save(project);
 
-        return projectMapper.toResponse(updatedProject);
+        ProjectResponse response = projectMapper.toResponse(updatedProject);
+        if (!assignedEngineers.isEmpty()) {
+            response.setEngineerName(assignedEngineers.stream().map(User::getUsername).collect(Collectors.joining(", ")));
+        } else if (updatedProject.getEngineer() != null) {
+            response.setEngineerName(updatedProject.getEngineer().getUsername());
+        }
+        return response;
     }
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.PROJECT_ITEM_ENTITY, details = Messages.PROJECT_ITEMS_ASSIGNED_LOG)

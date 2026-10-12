@@ -32,6 +32,11 @@ public class Messages {
     public static final String ROLE_DELETED = "Role deleted successfully";
     public static final String ROLE_FETCHED = "Role retrieved successfully";
     public static final String ROLES_FETCHED = "Roles retrieved successfully";
+    public static final String ROLE_IN_USE = "Cannot modify or delete this role because users are currently assigned to it";
+    public static final String ROLE_IN_USE_UPDATE = "Cannot update this role because users are currently assigned to it";
+    public static final String ROLE_IN_USE_DELETE = "Cannot delete this role because users are currently assigned to it";
+    public static final String SYSTEM_ROLE_CANNOT_BE_MODIFIED = "System roles (ADMIN, ENGINEER, CLIENT) cannot be updated";
+    public static final String SYSTEM_ROLE_CANNOT_BE_DELETED = "System roles (ADMIN, ENGINEER, CLIENT) cannot be deleted";
 
     //========================= Auth =========================
 

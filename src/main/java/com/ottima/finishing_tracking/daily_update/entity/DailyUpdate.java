@@ -45,6 +45,9 @@ public class DailyUpdate {
     @Column(nullable = false)
     private UpdateStatus status;
 
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by_admin_id")
     private User approvedByAdmin;

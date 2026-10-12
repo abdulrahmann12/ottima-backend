@@ -26,7 +26,14 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
                         p.address_ar AS addressAr,
                         p.address_en AS addressEn,
                         client.username AS clientName,
-                        engineer.username AS engineerName,
+                        COALESCE(
+                            CASE 
+                                WHEN p.engineer_ids IS NOT NULL AND jsonb_typeof(p.engineer_ids) = 'array' AND jsonb_array_length(p.engineer_ids) > 0 
+                                THEN (SELECT string_agg(u.username, ', ') FROM users u WHERE u.user_id IN (SELECT jsonb_array_elements_text(p.engineer_ids)::bigint))
+                                ELSE NULL 
+                            END,
+                            engineer.username
+                        ) AS engineerName,
                         p.overall_status AS overallStatus,
                         p.target_completion_date AS targetCompletionDate,
                         ROUND(COALESCE(SUM((COALESCE(pi.weight_percentage, 0) * COALESCE(pi.completion_percentage, 0)) / 100.0), 0), 2) AS overallProgressPercentage,
@@ -34,7 +41,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
                         p.deletes_at AS deletedAt
                     FROM projects p
                     JOIN users client ON client.user_id = p.client_id
-                    JOIN users engineer ON engineer.user_id = p.engineer_id
+                    LEFT JOIN users engineer ON engineer.user_id = p.engineer_id
                     LEFT JOIN project_items pi ON pi.project_id = p.project_id
                     WHERE (:search IS NULL
                         OR LOWER(p.name_ar) LIKE CONCAT('%', LOWER(:search), '%')
@@ -42,7 +49,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
                         OR LOWER(COALESCE(p.address_ar, '')) LIKE CONCAT('%', LOWER(:search), '%')
                         OR LOWER(COALESCE(p.address_en, '')) LIKE CONCAT('%', LOWER(:search), '%'))
                       AND (:clientId IS NULL OR p.client_id = :clientId)
-                      AND (:engineerId IS NULL OR p.engineer_id = :engineerId)
+                      AND (:engineerId IS NULL OR p.engineer_id = :engineerId OR (p.engineer_ids IS NOT NULL AND p.engineer_ids @> cast(concat('[', :engineerId, ']') as jsonb)))
                       AND ((COALESCE(:isDeleted, FALSE) = TRUE AND p.deletes_at IS NOT NULL)
                         OR (COALESCE(:isDeleted, FALSE) = FALSE AND p.deletes_at IS NULL))
                     GROUP BY
@@ -53,6 +60,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
                         p.address_en,
                         client.username,
                         engineer.username,
+                        p.engineer_ids,
                         p.overall_status,
                         p.target_completion_date,
                         p.deletes_at,
@@ -70,7 +78,7 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
                         OR LOWER(COALESCE(p.address_ar, '')) LIKE CONCAT('%', LOWER(:search), '%')
                         OR LOWER(COALESCE(p.address_en, '')) LIKE CONCAT('%', LOWER(:search), '%'))
                       AND (:clientId IS NULL OR p.client_id = :clientId)
-                      AND (:engineerId IS NULL OR p.engineer_id = :engineerId)
+                      AND (:engineerId IS NULL OR p.engineer_id = :engineerId OR (p.engineer_ids IS NOT NULL AND p.engineer_ids @> cast(concat('[', :engineerId, ']') as jsonb)))
                       AND ((COALESCE(:isDeleted, FALSE) = TRUE AND p.deletes_at IS NOT NULL)
                         OR (COALESCE(:isDeleted, FALSE) = FALSE AND p.deletes_at IS NULL))
                     """,
@@ -121,4 +129,11 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
     @EntityGraph(attributePaths = {"client", "engineer", "projectItems"})
     Page<Project> findAllByEngineer_UserIdAndDeletesAtIsNull(Long engineerId, Pageable pageable);
+
+    @Query(
+            value = "SELECT * FROM projects p WHERE p.deletes_at IS NULL AND (p.engineer_id = :engineerId OR (p.engineer_ids IS NOT NULL AND p.engineer_ids @> cast(concat('[', :engineerId, ']') as jsonb)))",
+            countQuery = "SELECT count(*) FROM projects p WHERE p.deletes_at IS NULL AND (p.engineer_id = :engineerId OR (p.engineer_ids IS NOT NULL AND p.engineer_ids @> cast(concat('[', :engineerId, ']') as jsonb)))",
+            nativeQuery = true
+    )
+    Page<Project> findAssignedProjectsForEngineer(@Param("engineerId") Long engineerId, Pageable pageable);
 }

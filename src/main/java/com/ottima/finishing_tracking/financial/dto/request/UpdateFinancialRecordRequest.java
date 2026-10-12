@@ -29,6 +29,9 @@ public class UpdateFinancialRecordRequest {
     @NotNull(message = ValidationMessages.FINANCIAL_RECORD_TYPE_REQUIRED)
     private RecordType recordType;
 
+    @Schema(description = "Category or label when expense is 'Other' (not linked to a specific item)", example = "مصاريف إدارية ونقل")
+    private String expenseCategory;
+
     @Schema(description = "Updated monetary amount of the transaction", example = "7500.00")
     @NotNull(message = ValidationMessages.FINANCIAL_AMOUNT_REQUIRED)
     @Positive(message = ValidationMessages.FINANCIAL_AMOUNT_POSITIVE)

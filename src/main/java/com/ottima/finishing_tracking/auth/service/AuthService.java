@@ -73,7 +73,7 @@ public class AuthService {
                 .revoked(false)
                 .expiresAt(expiresAt)
                 .build());
-        return new AuthResponse(accessToken, refreshToken);
+        return new AuthResponse(accessToken, refreshToken, user.getPreferredLanguage());
     }
 
     @Transactional
@@ -216,7 +216,7 @@ public class AuthService {
                 .expiresAt(expiresAt)
                 .build());
 
-        return new AuthResponse(newAccessToken, newRefreshToken);
+        return new AuthResponse(newAccessToken, newRefreshToken, user.getPreferredLanguage());
     }
 
     @Transactional

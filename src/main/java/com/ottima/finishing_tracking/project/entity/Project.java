@@ -8,6 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,8 +39,13 @@ public class Project {
     private User client;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "engineer_id", nullable = false)
+    @JoinColumn(name = "engineer_id")
     private User engineer;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "engineer_ids", columnDefinition = "jsonb")
+    @Builder.Default
+    private List<Long> engineerIds = new ArrayList<>();
 
     @Column(name = "name_ar", nullable = false)
     private String nameAr;
@@ -85,6 +93,14 @@ public class Project {
         if (!(o instanceof Project)) return false;
         Project project = (Project) o;
         return projectId != null && projectId.equals(project.getProjectId());
+    }
+
+    public boolean isAssignedToEngineer(Long engineerId) {
+        if (engineerId == null) return false;
+        if (engineer != null && engineer.getUserId() != null && engineer.getUserId().equals(engineerId)) {
+            return true;
+        }
+        return engineerIds != null && engineerIds.contains(engineerId);
     }
 
     @Override

@@ -99,6 +99,7 @@ public class EmailService {
         context.setVariable("updateTitle", event.getUpdateTitle());
         context.setVariable("status", event.getStatus() != null ? event.getStatus() : "EVALUATED");
         context.setVariable("notes", event.getNotes());
+        context.setVariable("rejectionReason", event.getRejectionReason());
         context.setVariable("evaluatedAt", formatDateTime(event.getTimestamp()));
 
         sendEmail(event.getEngineerEmail(), subject, "emails/daily-update-evaluated", context);

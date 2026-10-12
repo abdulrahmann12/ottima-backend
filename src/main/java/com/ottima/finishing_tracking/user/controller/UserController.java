@@ -29,6 +29,16 @@ public class UserController {
         return ResponseEntity.ok(new BaseResponse(Messages.USER_UPDATED, userService.updateMyProfile(request)));
     }
 
+    @Operation(summary = "Update Preferred Language", description = "Update current user preferred language (ar or en)")
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/preferred-language")
+    public ResponseEntity<BaseResponse> updatePreferredLanguage(@RequestBody java.util.Map<String, String> body) {
+        String lang = body != null ? body.get("language") : "ar";
+        return ResponseEntity.ok(
+                new BaseResponse("Preferred language updated successfully", userService.updatePreferredLanguage(lang))
+        );
+    }
+
     @Operation(summary = SwaggerMessages.UPDATE_USER_BY_ADMIN, description = SwaggerMessages.UPDATE_USER_BY_ADMIN_DESC)
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{userId}")

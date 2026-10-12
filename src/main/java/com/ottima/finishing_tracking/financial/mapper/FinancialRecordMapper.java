@@ -16,8 +16,34 @@ public interface FinancialRecordMapper {
     FinancialRecord toEntity(CreateFinancialRecordRequest request);
 
     @Mapping(target = "projectItemId", source = "projectItem.projectItemId")
-    @Mapping(target = "projectId", source = "projectItem.project.projectId")
-    @Mapping(target = "itemNameAr", source = "projectItem.standardItem.nameAr")
-    @Mapping(target = "itemNameEn", source = "projectItem.standardItem.nameEn")
+    @Mapping(target = "projectId", source = "project.projectId")
+    @Mapping(target = "itemNameAr", expression = "java(resolveItemNameAr(entity))")
+    @Mapping(target = "itemNameEn", expression = "java(resolveItemNameEn(entity))")
     FinancialRecordResponse toResponse(FinancialRecord entity);
+
+    default String resolveItemNameAr(FinancialRecord entity) {
+        if (entity.getProjectItem() != null && entity.getProjectItem().getStandardItem() != null) {
+            return entity.getProjectItem().getStandardItem().getNameAr();
+        }
+        if (entity.getExpenseCategory() != null && !entity.getExpenseCategory().isBlank()) {
+            if ("other".equalsIgnoreCase(entity.getExpenseCategory().trim())) {
+                return "أخرى";
+            }
+            return entity.getExpenseCategory();
+        }
+        return entity.getRecordType() == com.ottima.finishing_tracking.financial.enums.RecordType.EXPENSE ? "مصروفات عامة أخرى" : "دفعة مشروع عامة";
+    }
+
+    default String resolveItemNameEn(FinancialRecord entity) {
+        if (entity.getProjectItem() != null && entity.getProjectItem().getStandardItem() != null) {
+            return entity.getProjectItem().getStandardItem().getNameEn();
+        }
+        if (entity.getExpenseCategory() != null && !entity.getExpenseCategory().isBlank()) {
+            if ("أخرى".equals(entity.getExpenseCategory().trim()) || "other".equalsIgnoreCase(entity.getExpenseCategory().trim())) {
+                return "Other";
+            }
+            return entity.getExpenseCategory();
+        }
+        return entity.getRecordType() == com.ottima.finishing_tracking.financial.enums.RecordType.EXPENSE ? "Other General Expense" : "General Project Deposit";
+    }
 }

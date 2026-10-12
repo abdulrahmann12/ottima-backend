@@ -27,6 +27,7 @@ public class DailyUpdateResponse {
     private String title;
     private String notes;
     private UpdateStatus status;
+    private String rejectionReason;
     private Instant createdAt;
 
     private List<UpdateImageResponse> images;
@@ -36,5 +37,6 @@ public class DailyUpdateResponse {
         private UUID updateImageId;
         private String imageUrl;
         private Boolean approved;
+        private String rejectionReason;
     }
 }

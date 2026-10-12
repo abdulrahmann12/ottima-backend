@@ -42,6 +42,9 @@ public class FinancialRecord {
     @Column(name = "record_type", nullable = false)
     private RecordType recordType;
 
+    @Column(name = "expense_category")
+    private String expenseCategory;
+
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 

@@ -35,6 +35,7 @@ public class TicketResponse {
     private TicketStatus status;
 
     private List<TicketAttachmentResponse> attachments;
+    private List<TicketChatMessageDto> chatMessages;
 
     private Instant createdAt;
     private Instant updatedAt;

@@ -35,4 +35,6 @@ public class AdminUpdateUserRequest {
 
     @NotNull(message = ValidationMessages.ROLE_REQUIRED)
     private Long roleId;
+
+    private String preferredLanguage;
 }

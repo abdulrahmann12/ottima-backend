@@ -23,6 +23,7 @@ public class ProjectSummaryResponse {
     private String addressEn;
     private String clientName;
     private String engineerName;
+    private java.util.List<Long> engineerIds;
     private ProjectStatus overallStatus;
     private LocalDate targetCompletionDate;
     private Instant deletedAt;

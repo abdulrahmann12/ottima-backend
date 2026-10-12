@@ -61,6 +61,11 @@ public class InternalTicket {
     @Builder.Default
     private List<TicketAttachment> attachments = new ArrayList<>();
 
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "chat_messages", columnDefinition = "jsonb")
+    @Builder.Default
+    private List<com.ottima.finishing_tracking.ticket.dto.response.TicketChatMessageDto> chatMessages = new ArrayList<>();
+
     @CreationTimestamp
     private Instant createdAt;
 

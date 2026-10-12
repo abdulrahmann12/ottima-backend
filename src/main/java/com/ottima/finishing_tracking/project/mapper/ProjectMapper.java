@@ -74,6 +74,7 @@ public interface ProjectMapper {
     @Mapping(target = "projectId", ignore = true)
     @Mapping(target = "client", ignore = true)
     @Mapping(target = "engineer", ignore = true)
+    @Mapping(target = "engineerIds", ignore = true)
     @Mapping(target = "overallStatus", ignore = true)
     @Mapping(target = "projectItems", ignore = true)
     Project toEntity(CreateProjectRequest request);
@@ -81,6 +82,7 @@ public interface ProjectMapper {
     @Mapping(target = "projectId", ignore = true)
     @Mapping(target = "client", ignore = true)
     @Mapping(target = "engineer", ignore = true)
+    @Mapping(target = "engineerIds", ignore = true)
     void updateProjectFromRequest(UpdateProjectRequest request, @MappingTarget Project entity);
 
     @Mapping(target = "projectId", source = "projectId")

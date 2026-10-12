@@ -31,7 +31,7 @@ public class EngineerProjectController {
     @GetMapping
     public ResponseEntity<BaseResponse> getAllProjects(Pageable pageable) {
         return ResponseEntity.ok(
-                new BaseResponse(Messages.PROJECTS_FETCHED, projectDashboardService.getAllProjectsOverview(pageable)));
+                new BaseResponse(Messages.PROJECTS_FETCHED, projectDashboardService.getAssignProjectsForEngineer(pageable)));
     }
 
     @Operation(summary = SwaggerMessages.GET_ASSIGNED_PROJECTS_ENGINEER, description = SwaggerMessages.GET_ASSIGNED_PROJECTS_ENGINEER_DESC)

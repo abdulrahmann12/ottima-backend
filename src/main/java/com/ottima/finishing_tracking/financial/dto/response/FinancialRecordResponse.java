@@ -33,6 +33,9 @@ public class FinancialRecordResponse {
     @Schema(description = "Type of the record: DEPOSIT or EXPENSE", example = "DEPOSIT")
     private RecordType recordType;
 
+    @Schema(description = "Category or label when expense is Other", example = "مصاريف إدارية ونقل")
+    private String expenseCategory;
+
     @Schema(description = "Monetary amount of the transaction", example = "5000.00")
     private BigDecimal amount;
 

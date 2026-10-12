@@ -36,6 +36,9 @@ public class EvaluateDailyUpdateRequest {
     @Size(max = 2000, message = ValidationMessages.NOTES_SIZE)
     private String notes;
 
+    @Schema(description = "Reason or notes explaining why the overall update was rejected", example = "الدهان يحتاج لوجه إضافي")
+    private String rejectionReason;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -49,5 +52,8 @@ public class EvaluateDailyUpdateRequest {
         @Schema(description = "Approval status for the image (true = approved, false = rejected)", example = "true")
         @NotNull(message = ValidationMessages.APPROVAL_STATUS_REQUIRED)
         private Boolean approved;
+
+        @Schema(description = "Reason or note explaining why this specific image was rejected", example = "الصورة غير واضحة")
+        private String rejectionReason;
     }
 }

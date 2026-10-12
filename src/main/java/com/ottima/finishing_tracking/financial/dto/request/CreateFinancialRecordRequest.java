@@ -25,9 +25,12 @@ public class CreateFinancialRecordRequest {
     @Schema(description = "ID of the project item (null for general project-level deposits)", example = "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d")
     private UUID projectItemId;
 
-    @Schema(description = "Type of the financial record: DEPOSIT or EXPENSE", example = "DEPOSIT")
+    @Schema(description = "Type of the financial record: DEPOSIT or EXPENSE", example = "EXPENSE")
     @NotNull(message = ValidationMessages.FINANCIAL_RECORD_TYPE_REQUIRED)
     private RecordType recordType;
+
+    @Schema(description = "Category or label when expense is 'Other' (not linked to a specific item)", example = "مصاريف إدارية ونقل")
+    private String expenseCategory;
 
     @Schema(description = "Monetary amount of the transaction", example = "5000.00")
     @NotNull(message = ValidationMessages.FINANCIAL_AMOUNT_REQUIRED)

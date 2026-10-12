@@ -32,4 +32,7 @@ public interface DailyUpdateRepository extends JpaRepository<DailyUpdate, UUID> 
 
     @EntityGraph(attributePaths = {"images", "engineer", "projectItem", "projectItem.standardItem", "approvedByAdmin"})
     Page<DailyUpdate> findAllByProjectItem_ProjectItemIdAndStatusOrderByCreatedAtDesc(UUID projectItemId, UpdateStatus status, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"images", "engineer", "projectItem", "projectItem.standardItem", "approvedByAdmin", "projectItem.project"})
+    java.util.Optional<DailyUpdate> findWithDetailsByDailyUpdateId(UUID dailyUpdateId);
 }

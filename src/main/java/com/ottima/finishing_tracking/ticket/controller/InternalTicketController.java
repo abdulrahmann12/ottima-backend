@@ -61,6 +61,17 @@ public class InternalTicketController {
         );
     }
 
+    @Operation(summary = "Add message to ticket chat thread", description = "Post a message and optional files into the ticket chat thread")
+    @PostMapping("/{ticketId}/messages")
+    public ResponseEntity<BaseResponse> addTicketMessage(
+            @PathVariable UUID ticketId,
+            @Valid @RequestBody com.ottima.finishing_tracking.ticket.dto.request.AddTicketMessageRequest request) {
+
+        return ResponseEntity.ok(
+                new BaseResponse("Message added successfully", ticketService.addTicketMessage(ticketId, request))
+        );
+    }
+
     @Operation(summary = SwaggerMessages.DELETE_TICKET, description = SwaggerMessages.DELETE_TICKET_DESC)
     @DeleteMapping("/{ticketId}")
     public ResponseEntity<BaseResponse> deleteTicket(

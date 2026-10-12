@@ -20,7 +20,8 @@ import java.time.Instant;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", sequenceName = "users_seq", allocationSize = 1)
     private Long userId;
 
     @Column(nullable = false, unique = true, length = 50)
@@ -43,6 +44,14 @@ public class User {
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean active;
+
+    @Column(name = "preferred_language", length = 10, columnDefinition = "varchar(10) default 'ar'")
+    @Builder.Default
+    private String preferredLanguage = "ar";
+
+    public String getPreferredLanguage() {
+        return (preferredLanguage != null && !preferredLanguage.isBlank()) ? preferredLanguage : "ar";
+    }
 
     @Column(length=10)
     private String requestCode;

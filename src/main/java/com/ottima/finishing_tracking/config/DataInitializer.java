@@ -34,18 +34,31 @@ public class DataInitializer implements CommandLineRunner {
         Role adminRole = roleRepository.findByRoleName("ADMIN")
                 .orElse(null);
 
-        if (userRepository.count() == 0 && adminRole != null) {
-            User admin = new User();
+        if (adminRole != null) {
+            if (userRepository.count() == 0) {
+                User admin = new User();
+                admin.setUsername("admin");
+                admin.setPasswordHash(passwordEncoder.encode("admin123"));
+                admin.setRole(adminRole);
+                admin.setEmail("bodynafea2@gmail.com");
+                admin.setActive(true);
+                userRepository.save(admin);
+                System.out.println("✅ Default Admin created! (Username: admin | Password: admin123)");
+            }
 
-            admin.setUsername("admin");
-            admin.setPasswordHash(passwordEncoder.encode("admin123")); // الباسورد admin123
-            admin.setRole(adminRole);
-            admin.setEmail("bodynafea2@gmail.com");
-            // لو عندك حقل isActive خليه true
-             admin.setActive(true);
-
-            userRepository.save(admin);
-            System.out.println("✅ Default Admin created! (Username: admin | Password: admin123)");
+            if (!userRepository.existsByUsername("adminn")) {
+                User adminn = new User();
+                adminn.setUsername("adminn");
+                adminn.setPasswordHash(passwordEncoder.encode("adminn123"));
+                adminn.setRole(adminRole);
+                adminn.setEmail("adminn@ottima.com");
+                adminn.setFullNameAr("مدير النظام");
+                adminn.setFullNameEn("Admin");
+                adminn.setPhoneNumber("01012345679");
+                adminn.setActive(true);
+                userRepository.save(adminn);
+                System.out.println("✅ Admin created! (Username: adminn | Password: adminn123)");
+            }
         }
     }
 

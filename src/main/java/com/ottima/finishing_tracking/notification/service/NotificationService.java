@@ -209,8 +209,8 @@ public class NotificationService {
                     }
                 });
             }
-            case TICKET -> {
-                // Ticket context fallback lookup
+            case TICKET, PROJECT_CHAT -> {
+                // Ticket / Project Chat context fallback lookup
                 projectRepository.findById(referenceId).ifPresent(pr -> {
                     builder.projectId(pr.getProjectId());
                     builder.projectNameEn(pr.getNameEn());

@@ -14,8 +14,8 @@ import java.util.UUID;
 public interface StandardItemRepository extends JpaRepository<StandardItem, UUID> {
 
     @Query("SELECT s FROM StandardItem s WHERE " +
-            "(:keyword IS NULL OR LOWER(s.nameAr) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(s.nameEn) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "LOWER(s.nameAr) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(s.nameEn) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<StandardItem> searchItems(@Param("keyword") String keyword, Pageable pageable);
 
     boolean existsByNameArOrNameEn(String nameAr, String nameEn);

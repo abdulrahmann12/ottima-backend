@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -84,7 +85,7 @@ public class TicketService {
         ticket.setProject(project);
         ticket.setSender(currentSender);
         ticket.setReceiver(receiver);
-        ticket.setStatus(TicketStatus.PENDING);
+        ticket.setStatus(TicketStatus.NEW);
 
         if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
             List<TicketAttachment> attachments = request.getAttachments().stream()
@@ -159,7 +160,7 @@ public class TicketService {
             throw new UnauthorizedActionException(Messages.TICKET_UPDATE_DENIED);
         }
 
-        if (ticket.getStatus() != TicketStatus.PENDING) {
+        if (ticket.getStatus() != TicketStatus.PENDING && ticket.getStatus() != TicketStatus.NEW) {
             throw new TicketAlreadyProcessedException();
         }
 
@@ -219,7 +220,7 @@ public class TicketService {
         if (!ticket.getSender().getUserId().equals(currentUser.getUserId())) {
             throw new UnauthorizedActionException(Messages.TICKET_DELETE_DENIED);
         }
-        if (ticket.getStatus() != TicketStatus.PENDING) {
+        if (ticket.getStatus() != TicketStatus.PENDING && ticket.getStatus() != TicketStatus.NEW) {
             throw new TicketAlreadyProcessedException();
         }
 
@@ -264,6 +265,54 @@ public class TicketService {
         return internalTicketRepository
                 .findBySender_UserIdOrReceiver_UserIdOrderByCreatedAtDesc(userId, userId, pageable)
                 .map(ticketMapper::toResponse);
+    }
+
+    @Transactional
+    @CacheEvict(value = "tickets", allEntries = true)
+    public TicketResponse addTicketMessage(UUID ticketId, com.ottima.finishing_tracking.ticket.dto.request.AddTicketMessageRequest request) {
+        InternalTicket ticket = internalTicketRepository.findById(ticketId)
+                .orElseThrow(TicketNotFoundException::new);
+
+        User currentUser = authenticatedUserService.getCurrentUser();
+        boolean isAdmin = "ADMIN".equals(currentUser.getRole().getRoleName());
+        boolean isParticipant = ticket.getSender().getUserId().equals(currentUser.getUserId())
+                || ticket.getReceiver().getUserId().equals(currentUser.getUserId());
+        boolean isAssignedEng = ticket.getProject().isAssignedToEngineer(currentUser.getUserId());
+
+        if (!isAdmin && !isParticipant && !isAssignedEng) {
+            throw new UnauthorizedActionException(Messages.TICKET_UPDATE_DENIED);
+        }
+
+        String trimmedMessage = request.getMessage() != null && !request.getMessage().trim().isEmpty()
+                ? request.getMessage().trim()
+                : null;
+        List<String> files = request.getFileUrls() != null ? request.getFileUrls() : new ArrayList<>();
+
+        if (trimmedMessage == null && files.isEmpty()) {
+            throw new IllegalArgumentException("Message text or at least one file is required");
+        }
+
+        com.ottima.finishing_tracking.ticket.dto.response.TicketChatMessageDto messageDto = com.ottima.finishing_tracking.ticket.dto.response.TicketChatMessageDto.builder()
+                .messageId(UUID.randomUUID())
+                .senderId(currentUser.getUserId())
+                .senderName(currentUser.getFullNameEn() != null ? currentUser.getFullNameEn() : currentUser.getUsername())
+                .senderRole(currentUser.getRole().getRoleName())
+                .message(trimmedMessage)
+                .fileUrls(files)
+                .sentAt(Instant.now())
+                .build();
+
+        if (ticket.getChatMessages() == null) {
+            ticket.setChatMessages(new ArrayList<>());
+        }
+        ticket.getChatMessages().add(messageDto);
+
+        if (ticket.getStatus() == TicketStatus.NEW) {
+            ticket.setStatus(TicketStatus.OPEN);
+        }
+
+        InternalTicket saved = internalTicketRepository.save(ticket);
+        return ticketMapper.toResponse(saved);
     }
 
     public Long getCurrentUserId() {

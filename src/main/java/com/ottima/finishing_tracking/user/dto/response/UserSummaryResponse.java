@@ -18,5 +18,6 @@ public class UserSummaryResponse {
     private String fullNameAr;
     private String fullNameEn;
     private String phoneNumber;
+    private String preferredLanguage;
     private boolean active;
 }

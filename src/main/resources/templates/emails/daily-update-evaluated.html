@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             background-color: #F8F6F2;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: #2D251E;
             -webkit-font-smoothing: antialiased;
         }
@@ -196,6 +196,11 @@
                 <div th:if="${notes != null and !notes.isEmpty()}">
                     <div style="font-size: 12px; font-weight: 700; color: #8C827A; margin-top: 12px; text-transform: uppercase;">Admin Feedback / Notes:</div>
                     <div class="notes-box" th:text="${notes}">Feedback comments here.</div>
+                </div>
+
+                <div th:if="${rejectionReason != null and !rejectionReason.isEmpty()}">
+                    <div style="font-size: 12px; font-weight: 700; color: #E11D48; margin-top: 12px; text-transform: uppercase;">Rejection Reason:</div>
+                    <div class="notes-box" style="border-color: #FECDD3; background-color: #FFF1F2; color: #9F1239;" th:text="${rejectionReason}">Rejection reason here.</div>
                 </div>
             </div>
 

@@ -89,6 +89,7 @@ public class FinancialService {
         record.setDocumentUrl(request.getDocumentUrl());
         record.setDocumentType(request.getDocumentType());
         record.setNotes(request.getNotes());
+        record.setExpenseCategory(request.getExpenseCategory());
         record.setPaymentMethod(request.getPaymentMethod());
         record.setTransactionDate(request.getTransactionDate());
 

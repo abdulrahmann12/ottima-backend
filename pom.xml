@@ -165,17 +165,18 @@
 			<artifactId>thymeleaf</artifactId>
 		</dependency>
 
-		<!-- MySQL -->
+		<!-- PostgreSQL -->
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- H2 Database -->
+		<!-- H2 Database (test only) -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- open html to pdf -->

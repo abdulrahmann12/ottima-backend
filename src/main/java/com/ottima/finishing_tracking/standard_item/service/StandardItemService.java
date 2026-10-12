@@ -87,15 +87,16 @@ public class StandardItemService {
         standardItemRepository.delete(item);
     }
 
-    @Cacheable(value = "standardItems", key = "'search-' + (#keyword != null ? #keyword : 'none') + '-' + #page + '-' + #size")
+    @Cacheable(value = "standardItems", key = "'search-' + (#keyword != null && !#keyword.isBlank() ? #keyword.trim() : 'none') + '-' + #page + '-' + #size")
     public Page<StandardItemResponse> getAll(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        String processedKeyword = (keyword != null && !keyword.trim().isEmpty())
-                ? keyword.trim()
-                : null;
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return standardItemRepository.findAll(pageable)
+                    .map(standardItemMapper::toResponse);
+        }
 
-        return standardItemRepository.searchItems(processedKeyword, pageable)
+        return standardItemRepository.searchItems(keyword.trim(), pageable)
                 .map(standardItemMapper::toResponse);
     }
 

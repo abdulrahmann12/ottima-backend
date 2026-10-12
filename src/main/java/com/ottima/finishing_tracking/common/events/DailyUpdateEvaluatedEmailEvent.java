@@ -22,5 +22,6 @@ public class DailyUpdateEvaluatedEmailEvent {
     private String updateTitle;
     private String status;
     private String notes;
+    private String rejectionReason;
     private Instant timestamp;
 }

@@ -53,6 +53,14 @@ public class UserService {
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(RoleNotFoundException::new);
 
+        String preferredLanguage = "ar";
+        if (request.getPreferredLanguage() != null && !request.getPreferredLanguage().isBlank()) {
+            String lang = request.getPreferredLanguage().trim().toLowerCase();
+            if ("ar".equals(lang) || "en".equals(lang)) {
+                preferredLanguage = lang;
+            }
+        }
+
         User user = User.builder()
                 .username(request.getUsername().trim().toLowerCase())
                 .email(request.getEmail().trim().toLowerCase())
@@ -60,6 +68,7 @@ public class UserService {
                 .fullNameEn(request.getFullNameEn())
                 .phoneNumber(request.getPhoneNumber())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .preferredLanguage(preferredLanguage)
                 .role(role)
                 .active(true)
                 .build();
@@ -84,6 +93,12 @@ public class UserService {
         user.setFullNameAr(request.getFullNameAr());
         user.setFullNameEn(request.getFullNameEn());
         user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getPreferredLanguage() != null && !request.getPreferredLanguage().isBlank()) {
+            String lang = request.getPreferredLanguage().trim().toLowerCase();
+            if ("ar".equals(lang) || "en".equals(lang)) {
+                user.setPreferredLanguage(lang);
+            }
+        }
 
         return userMapper.toResponse(userRepository.save(user));
     }
@@ -105,7 +120,25 @@ public class UserService {
         user.setFullNameEn(request.getFullNameEn());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(role);
+        if (request.getPreferredLanguage() != null && !request.getPreferredLanguage().isBlank()) {
+            String lang = request.getPreferredLanguage().trim().toLowerCase();
+            if ("ar".equals(lang) || "en".equals(lang)) {
+                user.setPreferredLanguage(lang);
+            }
+        }
 
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    @CacheEvict(value = {"users", "adminsList", "engineersList", "clientsList", "dashboardSummary"}, allEntries = true)
+    public UserResponse updatePreferredLanguage(String language) {
+        User user = authenticatedUserService.getCurrentUser();
+        String lang = (language != null) ? language.trim().toLowerCase() : "ar";
+        if (!"ar".equals(lang) && !"en".equals(lang)) {
+            lang = "ar";
+        }
+        user.setPreferredLanguage(lang);
         return userMapper.toResponse(userRepository.save(user));
     }
 

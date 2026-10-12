@@ -64,6 +64,7 @@ public class AdminService {
         long activeProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.ACTIVE);
         long pausedProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.PAUSED);
         long deliveredProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.DELIVERED);
+        long completedProjects = projectRepository.countByOverallStatusAndDeletesAtIsNull(ProjectStatus.COMPLETED);
         long totalProjects = projectRepository.countByDeletesAtIsNull();
 
         long totalStandardItems = standardItemRepository.count();
@@ -78,7 +79,7 @@ public class AdminService {
                 .totalAdmins(totalAdmins)
                 .totalProjects(totalProjects)
                 .activeProjects(activeProjects)
-        //        .completedProjects(completedProjects)
+                .completedProjects(completedProjects)
                 .pausedProjects(pausedProjects)
                 .deliveredProjects(deliveredProjects)
                 .totalStandardItems(totalStandardItems)

@@ -17,6 +17,7 @@ public class ClientProjectResponse {
     private String addressEn;
     private String clientName;
     private String engineerName;
+    private List<Long> engineerIds;
     private ProjectStatus overallStatus;
     private BigDecimal estimatedBudget;
     private LocalDate targetCompletionDate;

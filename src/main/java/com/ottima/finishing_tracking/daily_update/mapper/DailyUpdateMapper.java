@@ -17,6 +17,7 @@ public interface DailyUpdateMapper {
     @Mapping(target = "engineer", ignore = true)
     @Mapping(target = "approvedByAdmin", ignore = true)
     @Mapping(target = "status", constant = "PENDING")
+    @Mapping(target = "rejectionReason", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     DailyUpdate toEntity(CreateDailyUpdateRequest request);
