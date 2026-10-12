@@ -55,7 +55,7 @@ public class Project {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "overall_status", nullable = false)
-    private ProjectStatus overallStatus;;
+    private ProjectStatus overallStatus;
 
     @Column(name = "address_ar")
     private String addressAr;

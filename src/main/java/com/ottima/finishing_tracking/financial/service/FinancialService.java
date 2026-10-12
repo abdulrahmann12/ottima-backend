@@ -20,8 +20,10 @@ import com.ottima.finishing_tracking.project.repository.ProjectRepository;
 import com.ottima.finishing_tracking.security.AuthenticatedUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,17 @@ public class FinancialService {
     private final ProjectItemRepository projectItemRepository;
     private final FinancialRecordMapper financialRecordMapper;
     private final AuthenticatedUserService authenticatedUserService;
+
+    private FinancialService self;
+
+    @Autowired
+    public void setSelf(@Lazy FinancialService self) {
+        this.self = self;
+    }
+
+    private FinancialService getSelf() {
+        return self != null ? self : this;
+    }
 
     @LogActivity(actionType = ActionType.CREATE, entityName = Constants.FINANCIAL_RECORD_ENTITY, details = Messages.FINANCIAL_RECORD_CREATED_LOG)
     @Transactional
@@ -163,7 +176,7 @@ public class FinancialService {
                 .build();
     }
 
-    @Cacheable(value = "projectFinancials", key = "'gallery-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectFinancials", key = "'gallery-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<FinancialRecordResponse> getProjectInvoicesGallery(UUID projectId, Pageable pageable) {
         Long currentUserId = authenticatedUserService.getCurrentUser().getUserId();
 
@@ -183,7 +196,7 @@ public class FinancialService {
                 .map(financialRecordMapper::toResponse);
     }
 
-    @Cacheable(value = "projectFinancials", key = "'all-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectFinancials", key = "'all-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<FinancialRecordResponse> getAllRecordsByProject(UUID projectId, Pageable pageable) {
         return financialRecordRepository.findByProject_ProjectIdOrderByCreatedAtDesc(projectId, pageable)
                 .map(financialRecordMapper::toResponse);
@@ -200,7 +213,7 @@ public class FinancialService {
                 .map(financialRecordMapper::toResponse);
     }
 
-    @Cacheable(value = "projectFinancials", key = "'type-' + #projectId + '-' + #recordType + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectFinancials", key = "'type-' + #projectId + '-' + #recordType + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<FinancialRecordResponse> getRecordsByProjectAndType(UUID projectId, RecordType recordType, Pageable pageable) {
         return financialRecordRepository.findByProject_ProjectIdAndRecordTypeOrderByCreatedAtDesc(projectId, recordType, pageable)
                 .map(financialRecordMapper::toResponse);
@@ -222,7 +235,7 @@ public class FinancialService {
 
     public Page<FinancialRecordResponse> getClientRecordsByProject(UUID projectId, Pageable pageable) {
         validateClientProjectOwnership(projectId);
-        return getAllRecordsByProject(projectId, pageable);
+        return getSelf().getAllRecordsByProject(projectId, pageable);
     }
 
     public FinancialRecordResponse getClientRecordById(UUID projectId, UUID financialRecordId) {
@@ -240,6 +253,6 @@ public class FinancialService {
 
     public Page<FinancialRecordResponse> getClientRecordsByProjectAndType(UUID projectId, RecordType recordType, Pageable pageable) {
         validateClientProjectOwnership(projectId);
-        return getRecordsByProjectAndType(projectId, recordType, pageable);
+        return getSelf().getRecordsByProjectAndType(projectId, recordType, pageable);
     }
 }

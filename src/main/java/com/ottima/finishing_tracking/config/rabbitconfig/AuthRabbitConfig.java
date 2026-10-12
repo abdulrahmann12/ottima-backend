@@ -32,10 +32,6 @@ public class AuthRabbitConfig {
 
     // ── Main Queues (all configured with DLX) ─────────────────────────────
 
-    @Bean
-    public Queue userChangeEmailQueue(){
-        return buildQueueWithDlx(RabbitConstants.USER_EMAIL_CHANGE_QUEUE);
-    }
 
     @Bean
     public Queue passwordResetQueue(){
@@ -49,10 +45,6 @@ public class AuthRabbitConfig {
 
     // ── Dead-Letter Queues ────────────────────────────────────────────────
 
-    @Bean
-    public Queue userChangeEmailDlq() {
-        return QueueBuilder.durable(RabbitConstants.USER_EMAIL_CHANGE_DLQ).build();
-    }
 
     @Bean
     public Queue passwordResetDlq() {
@@ -67,10 +59,6 @@ public class AuthRabbitConfig {
     // ── Main Queue Bindings ───────────────────────────────────────────────
 
 
-    @Bean
-    public Binding userChangeEmailBinding(TopicExchange authExchange, Queue userChangeEmailQueue){
-        return BindingBuilder.bind(userChangeEmailQueue).to(authExchange).with(RabbitConstants.USER_EMAIL_CHANGE_KEY);
-    }
 
     @Bean
     public Binding passwordResetBinding(TopicExchange authExchange, Queue passwordResetQueue) {
@@ -84,10 +72,6 @@ public class AuthRabbitConfig {
 
     // ── Dead-Letter Queue Bindings ────────────────────────────────────────
 
-    @Bean
-    public Binding userChangeEmailDlqBinding(DirectExchange authDlxExchange, Queue userChangeEmailDlq) {
-        return BindingBuilder.bind(userChangeEmailDlq).to(authDlxExchange).with(RabbitConstants.USER_EMAIL_CHANGE_QUEUE);
-    }
 
     @Bean
     public Binding passwordResetDlqBinding(DirectExchange authDlxExchange, Queue passwordResetDlq) {

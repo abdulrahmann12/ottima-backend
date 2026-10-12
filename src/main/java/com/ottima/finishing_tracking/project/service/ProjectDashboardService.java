@@ -63,7 +63,7 @@ public class ProjectDashboardService {
         return response;
     }
 
-    @Cacheable(value = "projectsList", key = "'client-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectsList", key = "'client-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<ProjectSummaryResponse> getProjectsForClient(Pageable pageable) {
         Long currentClientId = authenticatedUserService.getCurrentUser().getUserId();
         return projectRepository.findAllByClient_UserIdAndDeletesAtIsNull(currentClientId, pageable)
@@ -94,14 +94,14 @@ public class ProjectDashboardService {
         return response;
     }
 
-    @Cacheable(value = "projectsList", key = "'engineer-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectsList", key = "'engineer-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<ProjectSummaryResponse> getAssignProjectsForEngineer(Pageable pageable) {
         Long currentEngineerId = authenticatedUserService.getCurrentUser().getUserId();
         return projectRepository.findAssignedProjectsForEngineer(currentEngineerId, pageable)
                 .map(projectMapper::toSummaryResponse);
     }
 
-    @Cacheable(value = "projectsList", key = "'overview-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectsList", key = "'overview-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<ProjectSummaryResponse> getAllProjectsOverview(Pageable pageable) {
         return projectRepository.findAllByDeletesAtIsNull(pageable)
                 .map(projectMapper::toSummaryResponse);

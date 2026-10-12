@@ -32,6 +32,7 @@ import com.ottima.finishing_tracking.project.entity.ProjectItem;
 import com.ottima.finishing_tracking.project.repository.ProjectItemRepository;
 import com.ottima.finishing_tracking.project.repository.ProjectRepository;
 import com.ottima.finishing_tracking.standard_item.entity.StandardItem;
+import com.ottima.finishing_tracking.ticket.repository.InternalTicketRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +49,7 @@ public class NotificationService {
     private final DailyUpdateRepository dailyUpdateRepository;
     private final ProjectItemRepository projectItemRepository;
     private final ProjectRepository projectRepository;
+    private final InternalTicketRepository internalTicketRepository;
 
     // ==========================================
     // === Core Internal Logic (Called by Events)
@@ -209,8 +211,17 @@ public class NotificationService {
                     }
                 });
             }
-            case TICKET, PROJECT_CHAT -> {
-                // Ticket / Project Chat context fallback lookup
+            case TICKET -> {
+                internalTicketRepository.findById(referenceId).ifPresent(ticket -> {
+                    Project pr = ticket.getProject();
+                    if (pr != null) {
+                        builder.projectId(pr.getProjectId());
+                        builder.projectNameEn(pr.getNameEn());
+                        builder.projectNameAr(pr.getNameAr());
+                    }
+                });
+            }
+            case PROJECT_CHAT -> {
                 projectRepository.findById(referenceId).ifPresent(pr -> {
                     builder.projectId(pr.getProjectId());
                     builder.projectNameEn(pr.getNameEn());

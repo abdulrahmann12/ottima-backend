@@ -117,7 +117,7 @@ public class DailyUpdateService {
         return dailyUpdateMapper.toResponse(savedUpdate, false);
     }
 
-    @Cacheable(value = "projectUpdates", key = "'admin-' + #projectId + '-' + #projectItemId + '-' + #engineerId + '-' + #status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectUpdates", key = "'admin-' + #projectId + '-' + #projectItemId + '-' + #engineerId + '-' + #status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<DailyUpdateResponse> getUpdatesForAdmin(
             UUID projectId,
             UUID projectItemId,
@@ -130,7 +130,7 @@ public class DailyUpdateService {
         ).map(update -> dailyUpdateMapper.toResponse(update, false));
     }
 
-    @Cacheable(value = "projectUpdates", key = "'engineer-' + #root.target.getCurrentUserId() + '-' + #projectId + '-' + #projectItemId + '-' + #status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectUpdates", key = "'engineer-' + #root.target.getCurrentUserId() + '-' + #projectId + '-' + #projectItemId + '-' + #status + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<DailyUpdateResponse> getMyUpdatesAsEngineer(
             UUID projectId,
             UUID projectItemId,
@@ -144,7 +144,7 @@ public class DailyUpdateService {
         ).map(update -> dailyUpdateMapper.toResponse(update, false));
     }
 
-    @Cacheable(value = "projectUpdates", key = "'client-' + #root.target.getCurrentUserId() + '-' + #projectItemId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "projectUpdates", key = "'client-' + #root.target.getCurrentUserId() + '-' + #projectItemId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<DailyUpdateResponse> getUpdatesForClient(UUID projectItemId, Pageable pageable) {
         Long currentClientId = authenticatedUserService.getCurrentUser().getUserId();
 

@@ -42,20 +42,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(ImageUploadException.class)
-    public ResponseEntity<BaseResponse> handleImageUpload(ImageUploadException ex, WebRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(ImageDeletedException.class)
-    public ResponseEntity<BaseResponse> handleImageDeleted(ImageDeletedException ex, WebRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(ImageNullException.class)
-    public ResponseEntity<BaseResponse> handleImageNull(ImageNullException ex, WebRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
-    }
 
     @ExceptionHandler({
             AuthenticationCredentialsNotFoundException.class,
@@ -87,10 +73,14 @@ public class GlobalExceptionHandler {
 
     // === Business Exceptions === //
 
+    @ExceptionHandler(UserNotActiveException.class)
+    public ResponseEntity<BaseResponse> handleUserNotActive(UserNotActiveException ex, WebRequest request) {
+        return buildErrorResponse(ex, request, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler({
             RoleNotFoundException.class,
             UserNotFoundException.class,
-            UserNotActiveException.class,
             StandardItemNotFoundException.class,
             ProjectNotFoundException.class,
             ProjectItemNotFoundException.class,
@@ -184,10 +174,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AdminNotFoundException.class)
-    public ResponseEntity<BaseResponse> handleAdminNotFound(AdminNotFoundException ex, WebRequest request) {
-        return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     // === Validation Exceptions === //
 

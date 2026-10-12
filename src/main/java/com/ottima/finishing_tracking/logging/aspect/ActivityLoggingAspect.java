@@ -21,13 +21,20 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class ActivityLoggingAspect {
+
+    private static final Set<String> SENSITIVE_KEYS = Set.of(
+            "password", "passwordhash", "secret", "token", "refreshtoken",
+            "currentpassword", "newpassword", "requestcode", "code", "authorization"
+    );
 
     private final AuthenticatedUserService authenticatedUserService;
     private final ObjectMapper objectMapper;
@@ -55,7 +62,7 @@ public class ActivityLoggingAspect {
             if (result != null) {
                 try {
                     outputData = new HashMap<>();
-                    outputData.put("result", result);
+                    outputData.put("result", sanitizeValue(result));
                 } catch (Exception ex) {
                     log.warn("Could not prepare output data for logging", ex);
                 }
@@ -90,7 +97,7 @@ public class ActivityLoggingAspect {
             return result;
 
         } catch (Throwable e) {
-            // بناء كائن اللوج للفشل
+            // Failure log
             UserActivityLog failedLog = UserActivityLog.builder()
                     .userId(currentUser != null ? currentUser.getUserId() : null)
                     .username(currentUser != null ? currentUser.getUsername() : "System")
@@ -122,12 +129,54 @@ public class ActivityLoggingAspect {
 
             for (int i = 0; i < args.length; i++) {
                 if (args[i] != null && !args[i].getClass().getName().startsWith("org.springframework.web.multipart")) {
-                    argsMap.put(paramNames[i], args[i]);
+                    String paramName = paramNames[i];
+                    if (isSensitiveKey(paramName)) {
+                        argsMap.put(paramName, "******");
+                    } else {
+                        argsMap.put(paramName, sanitizeValue(args[i]));
+                    }
                 }
             }
         } catch (Exception e) {
             log.warn("Could not extract arguments for logging", e);
         }
         return argsMap;
+    }
+
+    private Object sanitizeValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Map<?, ?> map) {
+            Map<String, Object> sanitizedMap = new HashMap<>();
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                String key = String.valueOf(entry.getKey());
+                if (isSensitiveKey(key)) {
+                    sanitizedMap.put(key, "******");
+                } else {
+                    sanitizedMap.put(key, sanitizeValue(entry.getValue()));
+                }
+            }
+            return sanitizedMap;
+        }
+        if (value instanceof List<?> list) {
+            return list.stream().map(this::sanitizeValue).toList();
+        }
+        String className = value.getClass().getName();
+        if (className.startsWith("com.ottima") && !value.getClass().isEnum()) {
+            try {
+                Map<String, Object> map = objectMapper.convertValue(value, new TypeReference<Map<String, Object>>() {});
+                return sanitizeValue(map);
+            } catch (Exception ignored) {
+                return value.toString();
+            }
+        }
+        return value;
+    }
+
+    private boolean isSensitiveKey(String key) {
+        if (key == null) return false;
+        String normalized = key.toLowerCase().replace("_", "").replace("-", "");
+        return SENSITIVE_KEYS.stream().anyMatch(normalized::contains);
     }
 }

@@ -142,7 +142,7 @@ public class UserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    @Cacheable(value = "users", key = "#p0")
+    @Cacheable(value = "users", key = "'id-' + #userId")
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findByIdWithRole(userId).orElseThrow(UserNotFoundException::new);
         return userMapper.toResponse(user);
@@ -156,7 +156,7 @@ public class UserService {
         return userMapper.toResponse(user);
     }
 
-    @Cacheable(value = "users", key = "#p0")
+    @Cacheable(value = "users", key = "'identifier-' + #identifier.trim().toLowerCase()")
     public UserResponse getUserByIdentifier(String identifier) {
         User user = userRepository.findByUsernameOrEmailOrPhoneNumberWithRole(identifier.trim().toLowerCase())
                 .orElseThrow(UserNotFoundException::new);

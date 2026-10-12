@@ -88,7 +88,7 @@ public class RoleService {
                 });
     }
 
-    @Cacheable(value = "roles", key = "#p0")
+    @Cacheable(value = "roles", key = "'id-' + #roleId")
     public RoleResponse getRoleById(Long roleId){
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(RoleNotFoundException::new);
@@ -97,7 +97,7 @@ public class RoleService {
         return res;
     }
 
-    @Cacheable(value = "roles", key = "#p0.toUpperCase()")
+    @Cacheable(value = "roles", key = "'name-' + #roleName.trim().toUpperCase()")
     public RoleResponse getRoleByName(String roleName){
         Role role = roleRepository.findByRoleName(roleName.trim().toUpperCase())
                 .orElseThrow(RoleNotFoundException::new);

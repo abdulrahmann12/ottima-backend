@@ -234,7 +234,7 @@ public class TicketService {
         return ticketMapper.toResponse(ticket);
     }
 
-    @Cacheable(value = "tickets", key = "'project-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "tickets", key = "'project-' + #projectId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<TicketResponse> getTicketsByProject(UUID projectId, Pageable pageable) {
         if (!projectRepository.existsById(projectId)) {
             throw new ProjectNotFoundException();
@@ -243,21 +243,21 @@ public class TicketService {
                 .map(ticketMapper::toResponse);
     }
 
-    @Cacheable(value = "tickets", key = "'inbox-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "tickets", key = "'inbox-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<TicketResponse> getMyInbox(Pageable pageable) {
         User currentUser = authenticatedUserService.getCurrentUser();
         return internalTicketRepository.findByReceiver_UserIdOrderByCreatedAtDesc(currentUser.getUserId(), pageable)
                 .map(ticketMapper::toResponse);
     }
 
-    @Cacheable(value = "tickets", key = "'sent-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "tickets", key = "'sent-' + #root.target.getCurrentUserId() + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<TicketResponse> getMySentRequests(Pageable pageable) {
         User currentUser = authenticatedUserService.getCurrentUser();
         return internalTicketRepository.findBySender_UserIdOrderByCreatedAtDesc(currentUser.getUserId(), pageable)
                 .map(ticketMapper::toResponse);
     }
 
-    @Cacheable(value = "tickets", key = "'user-' + #userId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "tickets", key = "'user-' + #userId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<TicketResponse> getAllTicketsForSpecificUser(Long userId, Pageable pageable) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException();

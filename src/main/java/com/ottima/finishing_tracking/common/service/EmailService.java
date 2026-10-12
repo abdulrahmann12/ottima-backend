@@ -1,7 +1,6 @@
 package com.ottima.finishing_tracking.common.service;
 
 import com.ottima.finishing_tracking.common.events.CodeRegeneratedEvent;
-import com.ottima.finishing_tracking.common.events.EmailChangeEvent;
 import com.ottima.finishing_tracking.common.events.PasswordResetRequestedEvent;
 import com.ottima.finishing_tracking.exception.MailSendingException;
 import lombok.RequiredArgsConstructor;
@@ -60,14 +59,6 @@ public class EmailService {
         sendEmail(event.getEmail(), subject, "emails/password-reset", context);
     }
 
-    public void sendEmailChangeMail(EmailChangeEvent event, String subject) {
-        Context context = new Context();
-        context.setVariable("name", event.getUsername());
-        context.setVariable("code", event.getCode());
-        context.setVariable("newMail", event.getNewEmail());
-
-        sendEmail(event.getOldEmail(), subject, "emails/change-email", context);
-    }
 
     public void sendRegenerateCode(CodeRegeneratedEvent event, String subject) {
         Context context = new Context();

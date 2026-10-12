@@ -177,7 +177,7 @@ public class CommentService {
         return commentMapper.toResponse(savedComment);
     }
 
-    @Cacheable(value = "updateComments", key = "'comments-' + #root.target.getCurrentUserId() + '-' + #dailyUpdateId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+    @Cacheable(value = "updateComments", key = "'comments-' + #root.target.getCurrentUserId() + '-' + #dailyUpdateId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<CommentResponse> getCommentsForUpdate(UUID dailyUpdateId, Pageable pageable) {
         return commentRepository.findByDailyUpdate_DailyUpdateIdOrderByCreatedAtDesc(dailyUpdateId, pageable)
                 .map(commentMapper::toResponse);
