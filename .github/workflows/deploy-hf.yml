@@ -44,16 +44,24 @@ jobs:
           # Target space name: defaults to <github_username>/ottima-backend if HF_SPACE_REPO is not set
           TARGET="${HF_SPACE_REPO:-${{ github.repository_owner }}/ottima-backend}"
 
-          echo "🚀 Deploying to Hugging Face Space: $TARGET"
+          echo "🚀 Deploying clean snapshot to Hugging Face Space: $TARGET"
 
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+
+          # Ensure local_db or temporary files are excluded
+          rm -rf local_db target
+
+          # Create an orphan branch with clean state (no large historical git objects)
+          git checkout --orphan deploy-branch
+          git add -A
+          git commit -m "Deploy from GitHub Actions (${{ github.sha }})"
 
           # Configure Hugging Face Space remote with token
           git remote add space "https://user:${HF_TOKEN}@huggingface.co/spaces/${TARGET}" || \
           git remote set-url space "https://user:${HF_TOKEN}@huggingface.co/spaces/${TARGET}"
 
-          # Push to the Space main branch
-          git push --force space main
+          # Push the clean snapshot to Hugging Face main branch
+          git push --force space deploy-branch:main
 
-          echo "✅ Successfully pushed code to Hugging Face Space: $TARGET"
+          echo "✅ Successfully deployed clean snapshot to Hugging Face Space: $TARGET"
