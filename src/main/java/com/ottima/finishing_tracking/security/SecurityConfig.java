@@ -42,9 +42,11 @@ public class SecurityConfig {
                         .contentTypeOptions(opts -> {})
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger
+                        // Public Health Check for container platforms (Hugging Face / Docker)
+                        .requestMatchers("/actuator/health").permitAll()
+                        // Swagger & Public paths
                         .requestMatchers(SecurityConstants.PUBLIC_PATHS).permitAll()
-                        // Public URL redirect & check
+                        // Internal Actuator endpoints require ADMIN role
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         // Everything else requires auth
                         .anyRequest().authenticated()
@@ -64,9 +66,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedOriginPatterns(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

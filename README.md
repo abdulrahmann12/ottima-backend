@@ -1,3 +1,13 @@
+---
+title: Ottima Backend
+emoji: 🏗️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # OTTIMA — Finishing Project Tracking System
 
 > **Backend API Contract · v1.0 · For Frontend Developers**

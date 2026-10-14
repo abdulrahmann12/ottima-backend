@@ -1,0 +1,11 @@
+**/.git
+**/.gitignore
+**/.idea
+**/.vscode
+**/target
+**/.env
+**/*.env
+**/local_db
+HELP.md
+mvnw.cmd
+*.log

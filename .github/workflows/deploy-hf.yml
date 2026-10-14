@@ -1,0 +1,59 @@
+name: Sync & Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build & Sync to Hugging Face
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Verify Maven Compilation & Packaging
+        run: |
+          chmod +x ./mvnw
+          ./mvnw clean package -DskipTests -B
+
+      - name: Push to Hugging Face Space Repository
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE_REPO: ${{ secrets.HF_SPACE_REPO }}
+        run: |
+          if [ -z "$HF_TOKEN" ]; then
+            echo "❌ ERROR: HF_TOKEN secret is not set in GitHub repository secrets!"
+            echo "👉 Go to your GitHub repository: Settings -> Secrets and variables -> Actions"
+            echo "👉 Add a new repository secret named 'HF_TOKEN' with your Hugging Face Access Token (Write permissions)."
+            exit 1
+          fi
+
+          # Target space name: defaults to <github_username>/ottima-backend if HF_SPACE_REPO is not set
+          TARGET="${HF_SPACE_REPO:-${{ github.repository_owner }}/ottima-backend}"
+
+          echo "🚀 Deploying to Hugging Face Space: $TARGET"
+
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Configure Hugging Face Space remote with token
+          git remote add space "https://user:${HF_TOKEN}@huggingface.co/spaces/${TARGET}" || \
+          git remote set-url space "https://user:${HF_TOKEN}@huggingface.co/spaces/${TARGET}"
+
+          # Push to the Space main branch
+          git push --force space main
+
+          echo "✅ Successfully pushed code to Hugging Face Space: $TARGET"

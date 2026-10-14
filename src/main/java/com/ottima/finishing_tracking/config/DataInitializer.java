@@ -17,12 +17,17 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @org.springframework.beans.factory.annotation.Value("${app.bootstrap-admin.email:admin@ottima.com}")
+    private String bootstrapEmail;
+
+    @org.springframework.beans.factory.annotation.Value("${app.bootstrap-admin.password:admin123}")
+    private String bootstrapPassword;
+
     @Override
     public void run(String... args) throws Exception {
 
         // 1. التأكد من وجود الرولز، ولو مش موجودة نكريتها
         if (roleRepository.count() == 0) {
-            // (ملاحظة: لو الكونتراكتور بتاع Role عندك بياخد Id، خليه null، ولو بياخد اسم بس اكتبه)
             roleRepository.save(createRole("ADMIN"));
             roleRepository.save(createRole("ENGINEER"));
             roleRepository.save(createRole("CLIENT"));
@@ -30,35 +35,20 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // 2. التأكد من وجود أدمن، لو مفيش نكريت واحد
-        // استخدم اسم الـ Method اللي بتجيب الرول بالاسم عندك
         Role adminRole = roleRepository.findByRoleName("ADMIN")
                 .orElse(null);
 
-        if (adminRole != null) {
-            if (userRepository.count() == 0) {
-                User admin = new User();
-                admin.setUsername("admin");
-                admin.setPasswordHash(passwordEncoder.encode("admin123"));
-                admin.setRole(adminRole);
-                admin.setEmail("bodynafea2@gmail.com");
-                admin.setActive(true);
-                userRepository.save(admin);
-                System.out.println("✅ Default Admin created! (Username: admin | Password: admin123)");
-            }
-
-            if (!userRepository.existsByUsername("adminn")) {
-                User adminn = new User();
-                adminn.setUsername("adminn");
-                adminn.setPasswordHash(passwordEncoder.encode("adminn123"));
-                adminn.setRole(adminRole);
-                adminn.setEmail("adminn@ottima.com");
-                adminn.setFullNameAr("مدير النظام");
-                adminn.setFullNameEn("Admin");
-                adminn.setPhoneNumber("01012345679");
-                adminn.setActive(true);
-                userRepository.save(adminn);
-                System.out.println("✅ Admin created! (Username: adminn | Password: adminn123)");
-            }
+        if (adminRole != null && userRepository.count() == 0) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPasswordHash(passwordEncoder.encode(bootstrapPassword));
+            admin.setRole(adminRole);
+            admin.setEmail(bootstrapEmail != null && !bootstrapEmail.isBlank() ? bootstrapEmail : "admin@ottima.com");
+            admin.setFullNameAr("مدير النظام");
+            admin.setFullNameEn("System Administrator");
+            admin.setActive(true);
+            userRepository.save(admin);
+            System.out.println("✅ Bootstrap Admin created! (Username: admin | Email: " + admin.getEmail() + ")");
         }
     }
 
